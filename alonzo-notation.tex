@@ -1,0 +1,509 @@
+%% LaTeX Macros for Alonzo Notation
+%%
+%% William M. Farmer
+%%
+%% McMaster University
+
+%% Requires:
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{phonetic}
+\usepackage[dvipsnames]{xcolor}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% MISCELLANEOUS MACROS
+
+\newcommand{\mName}[1]{\mathsf{#1}}
+\newcommand{\mSet}[1]{\{ #1 \}}
+\newcommand{\mTuple}[1]{( #1 )}
+\newcommand{\mList}[1]{[ #1 ]}
+\newcommand{\mSeq}[1]{\langle #1 \rangle}
+\newcommand{\mSeqlike}[1]{\mSeq{\!\mSeq{#1}\!}}
+\newcommand{\mAbs}[1]{\lvert #1 \rvert}
+\newcommand{\mNorm}[1]{\lVert #1 \rVert}
+\newcommand{\mDot}{\mathrel{.}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FORMAL NOTATION
+
+% Types
+
+\newcommand{\fBoolTy}{\mName{BoolTy}}
+\newcommand{\fBaseTy}[1]{\mName{BaseTy}(#1)}
+\newcommand{\fFunTy}[2]{\mName{FunTy}(#1,#2)}
+\newcommand{\fProdTy}[2]{\mName{ProdTy}(#1,#2)}
+
+% Expressions
+
+\newcommand{\fVar}[2]{\mName{Var}(#1,#2)}
+\newcommand{\fCon}[2]{\mName{Con}(#1,#2)}
+\newcommand{\fEq}[2]{\mName{Eq}(#1,#2)}
+\newcommand{\fFunApp}[2]{\mName{FunApp}(#1,#2)}
+\newcommand{\fFunAbs}[3]{\mName{FunAbs}(\fVar{#1}{#2},#3)}
+\newcommand{\fDefDes}[3]{\mName{DefDes}(\fVar{#1}{#2},#3)}
+\newcommand{\fOrdPair}[2]{\mName{OrdPair}(#1,#2)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% COMPACT NOTATION
+
+% Types
+
+\newcommand{\cBoolTy}{\omicron}
+\newcommand{\cB}{\cBoolTy}
+\newcommand{\cBaseTy}[1]{#1}
+\newcommand{\cFunTy}[2]{({#1} \rightarrow {#2})}
+\newcommand{\cFunTyX}[2]{{#1} \rightarrow {#2}}
+\newcommand{\cFunTyB}[3]{\cFunTy {#1} {\cFunTyX {#2} {#3}}}
+\newcommand{\cFunTyBX}[3]{\cFunTyX {#1} {\cFunTyX {#2} {#3}}}
+\newcommand{\cFunTyC}[4]{\cFunTy {#1} {\cFunTyX {#2} {\cFunTyX {#3} {#4}}}}
+\newcommand{\cFunTyCX}[4]{\cFunTyX {#1} {\cFunTyX {#2} {\cFunTyX {#3} {#4}}}}
+\newcommand{\cProdTy}[2]{({#1} \times {#2})}
+\newcommand{\cProdTyX}[2]{{#1} \times {#2}}
+\newcommand{\cProdTyB}[3]{\cProdTy {#1} {\cProdTyX {#2} {#3}}}
+\newcommand{\cProdTyBX}[3]{\cProdTyX {#1} {\cProdTyX {#2} {#3}}}
+\newcommand{\cProdTyC}[4]{\cProdTy {#1} {\cProdTyX {#2} {\cProdTyX {#3} {#4}}}}
+\newcommand{\cProdTyCX}[4]{\cProdTyX {#1} {\cProdTyX {#2} {\cProdTyX {#3} {#4}}}}
+
+% Expressions
+
+\newcommand{\cVar}[2]{({#1} : {#2})}
+\newcommand{\cVarY}[2]{#1}
+\newcommand{\cCon}[2]{{#1}_{#2}}
+\newcommand{\cConY}[2]{#1}
+\newcommand{\cEq}[2]{({#1} = {#2})}
+\newcommand{\cEqX}[2]{{#1} = {#2}}
+\newcommand{\cFunApp}[2]{(#1\,#2)}
+\newcommand{\cFunAppX}[2]{#1\,#2}
+\newcommand{\cFunAppB}[3]{(\cFunAppX {\cFunAppX {#1} {#2}} {#3})}
+\newcommand{\cFunAppBX}[3]{\cFunAppX {\cFunAppX {#1} {#2}} {#3}}
+\newcommand{\cFunAppC}[4]{(\cFunAppX {\cFunAppX {\cFunAppX {#1}{#2}}{#3}}{#4})}
+\newcommand{\cFunAppCX}[4]{\cFunAppX {\cFunAppX {\cFunAppX {#1}{#2}}{#3}}{#4}}
+\newcommand{\cFunAbs}[3]{(\lambda\, #1 : #2 \mDot #3)}
+\newcommand{\cFunAbsX}[3]{\lambda\, #1 : #2 \mDot #3}
+\newcommand{\cDefDes}[3]{(\mathrm{I}\, #1 : #2 \mDot #3)}
+\newcommand{\cDefDesX}[3]{\mathrm{I}\, #1 : #2 \mDot #3}
+\newcommand{\cOrdPair}[2]{(#1,#2)}
+
+% Boolean Operators
+
+\newcommand{\cTPC}{T_\cB}
+\newcommand{\cT}{\cTPC}
+\newcommand{\cFPC}{F_\cB}
+\newcommand{\cF}{\cFPC}
+\newcommand{\cAndPC}{\wedge_{\cFunTyBX{\cB}{\cB}{\cB}}}
+\newcommand{\cAnd}[2]{({#1} \wedge {#2})}
+\newcommand{\cAndX}[2]{{#1} \wedge {#2}}
+\newcommand{\cAndB}[3]{\cAnd {#1} {\cAndX {#2} {#3}}}
+\newcommand{\cAndBX}[3]{\cAndX {#1} {\cAndX {#2} {#3}}}
+\newcommand{\cAndL}[1]{(#1)}   % separator is $\And$
+\newcommand{\cAndLX}[1]{#1}    % separator is $\And$
+\newcommand{\cImpliesPC}{\Rightarrow_{\cFunTyBX {\cB} {\cB} {\cB}}}
+\newcommand{\cImplies}[2]{({#1} \Rightarrow {#2})}
+\newcommand{\cImpliesX}[2]{{#1} \Rightarrow {#2}}
+\newcommand{\cNegPC}{\neg_{\cFunTyX{\cB}{\cB}}}
+\newcommand{\cNeg}[1]{(\neg{#1})}
+\newcommand{\cNegX}[1]{\neg{#1}}
+\newcommand{\cOrPC}{\vee_{\cFunTyBX{\cB}{\cB}{\cB}}}
+\newcommand{\cOr}[2]{({#1} \vee {#2})}
+\newcommand{\cOrX}[2]{{#1} \vee {#2}}
+\newcommand{\cOrB}[3]{\cOr {#1} {\cOrX {#2} {#3}}}
+\newcommand{\cOrBX}[3]{\cOrX {#1} {\cOrX {#2} {#3}}}
+\newcommand{\cOrL}[1]{(#1)}    % separator is $\Or$
+\newcommand{\cOrLX}[1]{#1}     % separator is $\Or$
+\newcommand{\cIfPC}[1]{\mName{if}_{\cFunTyCX{\cB}{#1}{#1}{#1}}}
+\newcommand{\cIf}[3]{(#1 \mapsto #2 \mid #3)}
+\newcommand{\cIfX}[3]{#1 \mapsto #2 \mid #3}
+
+% Binary Operators
+
+\newcommand{\cBin}[3]{({#1} \mathrel{#2} {#3})}
+\newcommand{\cBinX}[3]{{#1} \mathrel{#2} {#3}}
+\newcommand{\cBinB}[5]{({#1} \mathrel{#2} {#3} \mathrel{#4} {#5})}
+\newcommand{\cBinBX}[5]{{#1} \mathrel{#2} {#3} \mathrel{#4} {#5}}
+\newcommand{\cIff}[2]{({#1} \Leftrightarrow {#2})}
+\newcommand{\cIffX}[2]{{#1} \Leftrightarrow {#2}}
+\newcommand{\cNotEq}[2]{({#1} \not= {#2})}
+\newcommand{\cNotEqX}[2]{{#1} \not= {#2}}
+
+% Quantifiers
+
+\newcommand{\cForall}[3]{(\forall\, #1 : #2 \mDot #3)}
+\newcommand{\cForallX}[3]{\forall\, #1 : #2 \mDot #3}
+\newcommand{\cForallB}[5]{(\forall\, #1 : #2,\, #3 : #4 \mDot #5)}
+\newcommand{\cForallBX}[5]{\forall\, #1 : #2,\, #3 : #4 \mDot #5}
+\newcommand{\cForallC}[7]{(\forall\, #1 : #2,\, #3 : #4,\, #5 : #6 \mDot #7)}
+\newcommand{\cForallCX}[7]{\forall\, #1 : #2,\, #3 : #4,\, #5 : #6 \mDot #7}
+\newcommand{\cForsome}[3]{(\exists\, #1 : #2 \mDot #3)}
+\newcommand{\cForsomeX}[3]{\exists\, #1 : #2 \mDot #3}
+\newcommand{\cForsomeB}[5]{(\exists\, #1 : #2,\, #3 : #4 \mDot #5)}
+\newcommand{\cForsomeBX}[5]{\exists\, #1 : #2,\, #3 : #4 \mDot #5}
+\newcommand{\cForsomeC}[7]{(\exists\, #1 : #2,\, #3 : #4,\, #5 : #6 \mDot #7)}
+\newcommand{\cForsomeCX}[7]{\exists\, #1 : #2,\, #3 : #4,\, #5 : #6 \mDot #7}
+\newcommand{\cForsomeUnique}[3]{(\exists!\, #1 : #2 \mDot #3)}
+\newcommand{\cForsomeUniqueX}[3]{\exists!\, #1 : #2 \mDot #3}
+\newcommand{\cForsomeUniqueB}[5]{(\exists!\, #1 : #2, \, #3 : #4 \mDot #5)}
+\newcommand{\cForsomeUniqueBX}[5]{\exists!\, #1 : #2, \, #3 : #4 \mDot #5}
+\newcommand{\cForsomeUniqueC}[7]{(\exists!\, #1 : #2, \, #3 : #4, \, #5 : #6     \mDot #7)}
+\newcommand{\cForsomeUniqueCX}[7]{\exists!\, #1 : #2, \, #3 : #4, \, #5 : #6     \mDot #7}
+% Definedness
+
+\newcommand{\cBotPC}[1]{\bot_{#1}}
+\newcommand{\cEmpFunPC}[2]{\Delta_{\cFunTyX {#1} {#2}}}
+\newcommand{\cIsDef}[1]{(#1{\downarrow})}
+\newcommand{\cIsDefX}[1]{#1{\downarrow}}
+\newcommand{\cIsUndef}[1]{(#1{\uparrow})}
+\newcommand{\cIsUndefX}[1]{#1{\uparrow}}
+\newcommand{\cQuasiEq}[2]{({#1} \simeq {#2})}
+\newcommand{\cQuasiEqX}[2]{{#1} \simeq {#2}}
+\newcommand{\cNotQuasiEq}[2]{({#1} \not\simeq {#2})}
+\newcommand{\cNotQuasiEqX}[2]{{#1} \not\simeq {#2}}
+
+% Sets
+
+\newcommand{\cSetTy}[1]{\mSet{#1}}
+\newcommand{\cIn}[2]{({#1} \in {#2})}
+\newcommand{\cInX}[2]{{#1} \in {#2}}
+\newcommand{\cNotIn}[2]{({#1} \not\in {#2})}
+\newcommand{\cNotInX}[2]{{#1} \not\in {#2}}
+\newcommand{\cSet}[3]{\mSet{{{#1} : {#2}} \mid {#3}}}
+\newcommand{\cEmpSetPC}[1]{\emptyset_{\cSetTy {#1}}}
+\newcommand{\cEmpSetAltPC}[1]{\mSet{\,}_{\cSetTy {#1}}}
+\newcommand{\cUnivSetPC}[1]{U_{\cSetTy {#1}}}
+\newcommand{\cFinSet}[2]{\textsf{{$#1$}-{$#2$}-SET}}
+\newcommand{\cFinSetL}[1]{\mSet{#1}}  % separator is ","
+\newcommand{\cSubseteqPC}[1]{\subseteq_{\cFunTyBX {\cSetTy #1} {\cSetTy #1} {\cB}}}
+\newcommand{\cUnionPC}[1]{\cup_{\cFunTyBX {\cSetTy #1} {\cSetTy #1} {\cSetTy #1}}}
+\newcommand{\cUnion}[2]{\cBin {#1} {\cup} {#2}}
+\newcommand{\cUnionX}[2]{\cBinX {#1} {\cup} {#2}}
+\newcommand{\cIntersPC}[1]{\cap_{\cFunTyBX {\cSetTy #1} {\cSetTy #1} {\cSetTy #1}}}
+\newcommand{\cInters}[2]{\cBin {#1} {\cap} {#2}}
+\newcommand{\cIntersX}[2]{\cBinX {#1} {\cap} {#2}}
+\newcommand{\cComplPC}[1]{\overline{\,\cdot\,}_{\cFunTyX {\cSetTy #1} {\cSetTy #1}}}
+\newcommand{\cCompl}[1]{\overline{#1}}
+
+% Tuples
+
+\newcommand{\cTupleTyL}[1]{(#1)}  % separator is $\times$
+\newcommand{\cTupleL}[1]{(#1)}    % separator is ","
+\newcommand{\cFstPC}[2]{\mName{fst}_{\cFunTyX {\cProdTy {#1} {#2}} {#1}}}
+\newcommand{\cSndPC}[2]{\mName{snd}_{\cFunTyX {\cProdTy {#1} {#2}} {#2}}}
+
+% Functions
+
+\newcommand{\cDomPC}[2]{\mName{dom}_{\cFunTyX {\cFunTy {#1} {#2}} {\cSetTy {#1}}}}
+\newcommand{\cRanPC}[2]{\mName{ran}_{\cFunTyX {\cFunTy {#1} {#2}} {\cSetTy {#2}}}}
+\newcommand{\cSubfuneqPC}[2]{\subfun_{\cFunTyBX {\cFunTy {#1} {#2}} {\cFunTy {#1} {#2}} {\cB}}}
+\newcommand{\cFunCompPC}[3]{\circ_{\cFunTyBX {\cFunTy {#1} {#2}} {\cFunTy {#2} {#3}} {\cFunTy {#1} {#3}}}}
+\newcommand{\cFunComp}[2]{({#1} \circ {#2})}
+\newcommand{\cFunCompX}[2]{#1 \circ {#2}}
+\newcommand{\cRestrictPC}[2]{\restricted_{\cFunTyBX {\cFunTy {#1} {#2}} {\cSetTy {#1}} {\cFunTy {#1} {#2}}}}
+\newcommand{\cRestrict}[2]{(#1 \restricted_{#2})}
+\newcommand{\cRestrictX}[2]{#1 \restricted_{#2}}
+
+% Miscellaneous Notation
+
+\newcommand{\cTotal}[1]{\mName{TOTAL}(#1)}
+\newcommand{\cTotalB}[1]{\mName{TOTAL2}(#1)}
+\newcommand{\cSurj}[1]{\mName{SURJ}(#1)}
+\newcommand{\cSurjB}[1]{\mName{SURJ2}(#1)}
+\newcommand{\cInj}[1]{\mName{INJ}(#1)}
+\newcommand{\cBij}[1]{\mName{BIJ}(#1)}
+\newcommand{\cDistinctL}[1]{\mName{DISTINCT}(#1)}  % separator is ","
+
+% Quasitypes
+
+\newcommand{\cFunAbsQTy}[3]{\cFunAbs {#1} {#2} {#3}}
+\newcommand{\cFunAbsQTyX}[3]{\cFunAbsX {#1} {#2} {#3}}
+\newcommand{\cForallQTy}[3]{\cForall {#1} {#2} {#3}}
+\newcommand{\cForallQTyX}[3]{\cForallX {#1} {#2} {#3}}
+\newcommand{\cForallQTyB}[5]{\cForallB {#1} {#2} {#3} {#4} {#5}}
+\newcommand{\cForallQTyBX}[5]{\cForallBX {#1} {#2} {#3} {#4} {#5}}
+\newcommand{\cForsomeQTy}[3]{\cForsome {#1} {#2} {#3}}
+\newcommand{\cForsomeQTyX}[3]{\cForsomeX {#1} {#2} {#3}}
+\newcommand{\cForsomeQTyB}[5]{\cForsomeB {#1} {#2} {#3} {#4} {#5}}
+\newcommand{\cForsomeQTyBX}[5]{\cForsomeBX {#1} {#2} {#3} {#4} {#5}}
+\newcommand{\cDefDesQTy}[3]{\cDefDes {#1} {#2} {#3}}
+\newcommand{\cDefDesQTyX}[3]{\cDefDesX {#1} {#2} {#3}}
+\newcommand{\cIsDefInQTy}[2]{({#1} \downarrow {#2})}
+\newcommand{\cIsDefInQTyX}[2]{{#1} \downarrow {#2}}
+\newcommand{\cIsUndefInQTy}[2]{({#1} \uparrow {#2})}
+\newcommand{\cIsUndefInQTyX}[2]{{#1} \uparrow {#2}}
+\newcommand{\cFunQTyPC}[2]{\rightarrow_{\cFunTyBX {\cSetTy {#1}} {\cSetTy {#2}} {\cSetTy {\cFunTyX {#1} {#2}}}}}
+\newcommand{\cFunQTy}[2]{\cFunTy {#1} {#2}}
+\newcommand{\cFunQTyX}[2]{\cFunTyX {#1} {#2}}
+\newcommand{\cFunQTyB}[3]{\cFunTyB {#1} {#2} {#3}}
+\newcommand{\cFunQTyBX}[3]{\cFunTyBX {#1} {#2} {#3}}
+\newcommand{\cFunQTyC}[4]{\cFunTyC {#1} {#2} {#3} {#4}}
+\newcommand{\cFunQTyCX}[4]{\cFunTyCX {#1} {#2} {#3} {#4}}
+\newcommand{\cProdQTyPC}[2]{\times_{\cFunTyBX {\cSetTy {#1}} {\cSetTy {#2}} {\cSetTy {\cProdTyX {#1} {#2}}}}}
+\newcommand{\cProdQTy}[2]{\cProdTy {#1} {#2}}
+\newcommand{\cProdQTyX}[2]{\cProdTyX {#1} {#2}}
+\newcommand{\cProdQTyB}[3]{\cProdTyB {#1} {#2} {#3}}
+\newcommand{\cProdQTyBX}[3]{\cProdTyBX {#1} {#2} {#3}}
+\newcommand{\cProdQTyC}[4]{\cProdTyC {#1} {#2} {#3} {#4}}
+\newcommand{\cProdQTyCX}[4]{\cProdTyCX {#1} {#2} {#3} {#4}}
+\newcommand{\cTotalOn}[3]{\textsf{TOTAL-ON}(#1,#2,#3)}
+\newcommand{\cTotalOnB}[4]{\textsf{TOTAL-ON2}(#1,#2,#3,#4)}
+\newcommand{\cSurjOn}[3]{\textsf{SURJ-ON}(#1,#2,#3)}
+\newcommand{\cSurjOnB}[4]{\textsf{SURJ-ON2}(#1,#2,#3,#4)}
+\newcommand{\cInjOn}[2]{\textsf{INJ-ON}(#1,#2)}
+\newcommand{\cBijOn}[3]{\textsf{BIJ-ON}(#1,#2,#3)}
+\newcommand{\cInf}[1]{\mName{INF}(#1)}
+\newcommand{\cFin}[1]{\mName{FIN}(#1)}
+\newcommand{\cCount}[1]{\mName{COUNT}(#1)}
+
+% Dependent Quasitypes
+
+\newcommand{\cPiTy}[2]{\cFunTyBX {\cSetTy {#1}} {\cFunTy {#1} {\cSetTy {#2}}} {\cSetTy {\cFunTyX {#1} {#2}}}}
+\newcommand{\cPiPC}[2]{\Pi_{\cPiTy {#1} {#2}}}
+\newcommand{\cPi}[3]{(\Pi\, #1 : #2 \mDot #3)}
+\newcommand{\cPiX}[3]{\Pi\, #1 : #2 \mDot #3}
+\newcommand{\cSigmaTy}[2]{\cFunTyBX {\cSetTy {#1}} {\cFunTy {#1} {\cSetTy {#2}}} {\cSetTy {\cProdTyX {#1} {#2}}}}
+\newcommand{\cSigmaPC}[2]{\Sigma_{\cSigmaTy {#1} {#2}}}
+\newcommand{\cSigma}[3]{(\Sigma\, #1 : #2 \mDot #3)}
+\newcommand{\cSigmaX}[3]{\Sigma\, #1 : #2 \mDot #3}
+
+% Sequences
+
+\newcommand{\cSequencesPC}[2]{\mName{sequences}_{\cSetTy {\cFunTyX {#1} {#2}}}}
+\newcommand{\cSeqQTy}[1]{\mSeqlike{#1}}
+\newcommand{\cStreamsPC}[2]{\mName{streams}_{\cSetTy {\cFunTyX {#1} {#2}}}}
+\newcommand{\cSeqInfQTy}[1]{\mSeq{#1}}
+\newcommand{\cListsPC}[2]{\mName{lists}_{\cSetTy {\cFunTyX {#1} {#2}}}}
+\newcommand{\cSeqFinQTy}[1]{\mList{#1}}
+\newcommand{\cConsPC}[2]{\mName{cons}_{\cFunTyBX {#2} {\cFunTy {#1} {#2}} {\cFunTy {#1} {#2}}}}
+\newcommand{\cCons}[2]{({#1} :: {#2})}
+\newcommand{\cConsX}[2]{{#1} :: {#2}}
+\newcommand{\cHdPC}[2]{\mName{hd}_{\cFunTyX {\cFunTy {#1} {#2}} {#2}}}
+\newcommand{\cTlPC}[2]{\mName{tl}_{\cFunTyX {\cFunTy {#1} {#2}} {\cFunTy {#1} {#2}}}}
+\newcommand{\cNilPC}[2]{\mName{nil}_{\cFunTyX {#1} {#2}}}
+\newcommand{\cEmpListPC}[2]{{\mList{\;}}_{\cFunTyX {#1} {#2}}}
+\newcommand{\cListL}[1]{\mList{#1}}  % separator is ","
+\newcommand{\cLenPC}[2]{\mName{len}_{\cFunTyX {\cFunTy {#1} {#2}} {#1}}}
+\newcommand{\cLen}{\mAbs}
+\newcommand{\cNlistsPC}[2]{\mName{nlists}_{\cFunTyX {#1} {\cSetTy {\cFunTyX {#1} {#2}}}}}
+\newcommand{\cSeqNFinQTy}[2]{\mList{#1}^{#2}}
+
+% Real Numbers
+
+\newcommand{\cRecip}{\recip}
+\newcommand{\cFrac}{\frac}
+\newcommand{\cAbs}{\mAbs}
+\newcommand{\cSqrt}{\sqrt}
+\newcommand{\cNorm}{\mNorm}
+\newcommand{\cSum}[4]{\sum\limits_{{#1} = {#2}}^{#3} {#4}}
+\newcommand{\cProd}[4]{\prod\limits_{{#1} = {#2}}^{#3} {#4}}
+\newcommand{\cLim}[3]{\lim\limits_{{#1} \to {#2}} {#3}}
+\newcommand{\cRightLim}[3]{\lim\limits_{{#1} \to {#2}^+} {#3}}
+\newcommand{\cLeftLim}[3]{\lim\limits_{{#1} \to {#2}^-} {#3}}
+\newcommand{\cLimSeq}[2]{\lim\limits_{{#1} \to \infty} {#2}}
+\newcommand{\cIntegral}[4]{\int_{#1}^{#2} {#3}\,d{#4}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% THEOREM ENVIRONMENTS
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{eg}[thm]{Example}
+\newtheorem{rem}[thm]{Remark}
+
+\newtheorem{thydef}[thm]{Theory Definition}
+\newtheorem{thyext}[thm]{Theory Extension}
+\newtheorem{devdef}[thm]{Development Definition}
+\newtheorem{devext}[thm]{Development Extension}
+\newtheorem{thytransdef}[thm]{Theory Translation Definition}
+\newtheorem{thytransext}[thm]{Theory Translation Extension}
+\newtheorem{devtransdef}[thm]{Development Translation Definition}
+\newtheorem{devtransext}[thm]{Development Translation Extension}
+\newtheorem{deftransport}[thm]{Definition Transportation}
+\newtheorem{thmtransport}[thm]{Theorem Transportation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ENVIRONMENTS
+
+\newenvironment{theory-def}[6]
+{
+\color{brown}
+\begin{thydef}[#1]\em
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Base types:} #3
+\item[]\hspace{-3ex}\textbf{Constants:} #4
+\item[]\hspace{-3ex}\textbf{Axioms:} #5
+\end{itemize}
+ #6
+\end{thydef} 
+}
+
+\newenvironment{theory-ext}[7]
+{
+\color{brown}
+\begin{thyext}[#1]\em
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Extends\ } #3
+\item[]\hspace{-3ex}\textbf{New base types:} #4
+\item[]\hspace{-3ex}\textbf{New constants:} #5
+\item[]\hspace{-3ex}\textbf{New axioms:} #6
+\end{itemize}
+#7
+\end{thyext}
+}
+
+\newenvironment{dev-def}[4]
+{
+\color{brown}
+\begin{devdef}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Bottom theory:} #3
+\item[]\hspace{-3ex}\textbf{Definitions and theorems:}
+\end{itemize}
+#4
+\end{devdef}
+}
+
+\newenvironment{dev-ext}[4]
+{
+\color{brown}
+\begin{devext}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Extends\ } #3
+\item[]\hspace{-3ex}\textbf{New definitions and theorems:}
+\end{itemize}
+#4
+\end{devext}
+}
+
+\newenvironment{theory-trans-def}[6]
+{
+\color{brown}
+\begin{thytransdef}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Source theory:} #3
+\item[]\hspace{-3ex}\textbf{Target theory:} #4
+\item[]\hspace{-3ex}\textbf{Base type mapping:}
+\end{itemize}
+#5
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Constant mapping:}
+\end{itemize}
+#6
+\end{thytransdef}
+}
+
+\newenvironment{theory-trans-ext}[7]
+{
+\color{brown}
+\begin{thytransext}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Extends\ } #3
+\item[]\hspace{-3ex}\textbf{New source theory:} #4
+\item[]\hspace{-3ex}\textbf{New target theory:} #5
+\item[]\hspace{-3ex}\textbf{New base type mapping:}
+\end{itemize}
+#6
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{New constant mapping:}
+\end{itemize}
+#7
+\end{thytransext}
+}
+
+\newenvironment{dev-trans-def}[6]
+{
+\color{brown}
+\begin{devtransdef}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Source development:} #3
+\item[]\hspace{-3ex}\textbf{Target development:} #4
+\item[]\hspace{-3ex}\textbf{Base type mapping:}
+\end{itemize}
+#5
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Constant mapping:}
+\end{itemize}
+#6
+\end{devtransdef}
+}
+
+\newenvironment{dev-trans-ext}[6]
+{
+\color{brown}
+\begin{devtransext}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Extends\ } #3
+\item[]\hspace{-3ex}\textbf{New source development:} #4
+\item[]\hspace{-3ex}\textbf{New target development:} #5
+\end{itemize}
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{New defined constant mapping:}
+\end{itemize}
+#6
+\end{devtransext}
+}
+
+\newenvironment{def-transport}[7]
+{
+\color{brown}
+\begin{deftransport}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Development morphism:} #3
+\item[]\hspace{-3ex}\textbf{Definition:}
+\end{itemize}
+#4
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Transported definition:}
+\end{itemize}
+#5
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{New target development:} #6
+\item[]\hspace{-3ex}\textbf{New development translation:} #7
+\end{itemize}
+\end{deftransport}
+}
+
+\newenvironment{thm-transport}[6]
+{
+\color{brown}
+\begin{thmtransport}[#1]\em
+\noindent
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Name:} #2
+\item[]\hspace{-3ex}\textbf{Development morphism:} #3
+\item[]\hspace{-3ex}\textbf{Theorem:}
+\end{itemize}
+#4
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{Transported theorem:}
+\end{itemize}
+#5
+\begin{itemize}
+\item[]\hspace{-3ex}\textbf{New target development:} #6
+\end{itemize}
+\end{thmtransport}
+}
+

@@ -1,0 +1,140 @@
+\renewcommand{\labelenumii}{\theenumii.}
+\newcommand{\be}{\begin{enumerate}}
+\newcommand{\ee}{\end{enumerate}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\bsp}{\begin{sloppypar}}
+\newcommand{\esp}{\end{sloppypar}}
+
+\newcommand{\sA}{{\cal A}}
+\newcommand{\sB}{{\cal B}}
+\newcommand{\sC}{{\cal C}}
+\newcommand{\sD}{{\cal D}}
+\newcommand{\sE}{{\cal E}}
+\newcommand{\sF}{{\cal F}}
+\newcommand{\sG}{{\cal G}}
+\newcommand{\sH}{{\cal H}}
+\newcommand{\sI}{{\cal I}}
+\newcommand{\sJ}{{\cal J}}
+\newcommand{\sK}{{\cal K}}
+\newcommand{\sL}{{\cal L}}
+\newcommand{\sM}{{\cal M}}
+\newcommand{\sN}{{\cal N}}
+\newcommand{\sO}{{\cal O}}
+\newcommand{\sP}{{\cal P}}
+\newcommand{\sQ}{{\cal Q}}
+\newcommand{\sR}{{\cal R}}
+\newcommand{\sS}{{\cal S}}
+\newcommand{\sT}{{\cal T}}
+\newcommand{\sU}{{\cal U}}
+\newcommand{\sV}{{\cal V}}
+\newcommand{\sW}{{\cal W}}
+\newcommand{\sX}{{\cal X}}
+\newcommand{\sY}{{\cal Y}}
+\newcommand{\sZ}{{\cal Z}}
+
+\newcommand{\bA}{\mathbb{A}}
+\newcommand{\bB}{\mathbb{B}}
+\newcommand{\bC}{\mathbb{C}}
+\newcommand{\bD}{\mathbb{D}}
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bF}{\mathbb{F}}
+\newcommand{\bG}{\mathbb{G}}
+\newcommand{\bH}{\mathbb{H}}
+\newcommand{\bI}{\mathbb{I}}
+\newcommand{\bJ}{\mathbb{J}}
+\newcommand{\bK}{\mathbb{K}}
+\newcommand{\bL}{\mathbb{L}}
+\newcommand{\bM}{\mathbb{M}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bO}{\mathbb{O}}
+\newcommand{\bP}{\mathbb{P}}
+\newcommand{\bQ}{\mathbb{Q}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bS}{\mathbb{S}}
+\newcommand{\bT}{\mathbb{T}}
+\newcommand{\bU}{\mathbb{U}}
+\newcommand{\bV}{\mathbb{V}}
+\newcommand{\bW}{\mathbb{W}}
+\newcommand{\bX}{\mathbb{X}}
+\newcommand{\bY}{\mathbb{Y}}
+\newcommand{\bZ}{\mathbb{Z}}
+
+
+\newcommand{\sglsp}{\ }
+\newcommand{\dblsp}{\ \ }
+\newcommand{\textrel}[1]{\dblsp \text{#1} \dblsp}
+
+\newcommand{\TRUE}{\mbox{{\sc t}}}
+\newcommand{\FALSE}{\mbox{{\sc f}}}
+\newcommand{\Neg}{\neg} 
+\ifdefined \And 
+\renewcommand{\And}{\wedge}
+\else
+\newcommand{\And}{\wedge}
+\fi
+\newcommand{\Or}{\vee}
+\newcommand{\Implies}{\Rightarrow}
+\newcommand{\Iff}{\Leftrightarrow}
+\newcommand{\Forall}{\forall}
+\newcommand{\ForallApp}{\forall\,}
+\newcommand{\Forsome}{\exists}
+\newcommand{\ForsomeApp}{\exists\,}
+\newcommand{\ForsomeUnique}{\exists!}
+\newcommand{\ForsomeUniqueApp}{\exists!\,}
+\newcommand{\LambdaApp}{\lambda\,}
+\newcommand{\LAMBDAapp}{\Lambda\,}
+\newcommand{\PiApp}{\Pi\,}
+\newcommand{\SigmaApp}{\Sigma\,}
+\newcommand{\iotaApp}{\iota\,}
+\newcommand{\Iota}{{\rm I}}
+\newcommand{\IotaApp}{{\rm I}\,}
+\newcommand{\invertediota}{\rotatebox[origin=c]{180}{$\iota$}}
+\newcommand{\epsilonApp}{\epsilon\,}
+\newcommand{\Set}{\circledS}
+\newcommand{\SetApp}{\circledS\,}
+
+\newcommand{\IsDef}{\downarrow}
+\newcommand{\IsUndef}{\uparrow}
+\newcommand{\IsDefApp}{\,{\IsDef}}
+\newcommand{\IsUndefApp}{\,{\IsUndef}}
+\newcommand{\QuasiEqual}{\simeq}
+\newcommand{\Undefined}{\bot}
+\newcommand{\If}[3]{#1 \mapsto #2 \mid #3}
+\newcommand{\SynEqual}{\equiv}
+
+\renewcommand{\phi}{\varphi}
+%\newcommand{\set}[1]{{\{#1\}}}
+\newcommand{\seq}[1]{{\langle #1 \rangle}}
+\newcommand{\seqlike}[1]{\seq{\!\seq{#1}\!}}
+%\newcommand{\mlist}[1]{[#1]}
+\newcommand{\compl}[1]{\overline{#1}}
+\newcommand{\recip}[1]{{#1}^{-1}}
+\newcommand{\pow}[1]{\sP(#1)}
+\newcommand{\tarrow}{\rightarrow}
+%\newcommand{\bo}{\omicron}
+\newcommand{\consext}{\trianglelefteq}
+\newcommand{\mIff}{\textrel{iff}}
+\newcommand{\mImp}{\textrel{implies}}
+\newcommand{\mEq}{\dblsp{=}\dblsp}
+\newcommand{\mNotEq}{\dblsp{\not=}\dblsp}
+\newcommand{\mQEq}{\dblsp{\simeq}\dblsp}
+\newcommand{\mNotQEq}{\dblsp{\not\simeq}\dblsp}
+\newcommand{\mIncluded}{\preceq}
+\newcommand{\hr}{\phantom{}^\ast\mathbb{R}}
+\newcommand{\restricted}{\mbox{$\upharpoonright$}\nolinebreak}
+\newcommand{\subfun}{\sqsubseteq}
+\newcommand{\clexpr}[1]{\overline{\sE_{#1}}}
+
+\newcommand{\churchqe}{$\mbox{\sc ctt}_{\rm qe}$}
+\newcommand{\churchuqe}{$\mbox{\sc ctt}_{\rm uqe}$}
+\newcommand{\qzero}{${\cal Q}_0$}
+\newcommand{\qzerou}{${\cal Q}^{\rm u}_{0}$}
+\newcommand{\qzerouqe}{${\cal Q}^{\rm uqe}_{0}$}
+\newcommand{\fstar}{${\rm F}^\ast$}
+
+\newenvironment{proof}[1][\unskip]{\par\noindent{\bf Proof{#1}\dblsp}}{\hfill$\Box$}
+
+\newcommand{\urlpart}[1]{\mbox{\texttt{#1}}\linebreak[0]}
