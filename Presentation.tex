@@ -1,0 +1,563 @@
+\documentclass[xcolor={dvipsnames}]{beamer}
+
+\usepackage{enumerate}
+\usepackage{MnSymbol,wasysym}
+
+\usepackage[numbers]{natbib}
+
+\def\labelenumii{\theenumi}
+
+\setbeamertemplate{navigation symbols}{}
+
+\newcommand{\cInjB}[1]{\mName{INJ2}(#1)}
+
+%Information to be included in the title page:
+\usetheme{Berlin}
+\title{Alonzo in Alonzo}
+\author{Christopher Schankula \& Dennis Yankovsky\\ (Group 1: ``See: Group Name'')}
+\institute{CAS-760 Fall 2022, \\McMaster University}
+\date{December 5th, 2022}
+
+\input{simple-type-theory-def}
+\input{alonzo-notation}
+
+\begin{document}
+
+\newcommand\boxednumber[1]
+{%
+  \hbox{%
+    \usebeamerfont*{item projected}%
+    \usebeamercolor[bg]{item projected}%
+    \vrule width2.25ex height1.85ex depth.4ex%
+    \hskip-2.25ex%
+    \hbox to2.25ex{%
+      \hfil%
+      \color{fg}#1%
+      \hfil}%
+  }%
+}
+
+\newcommand*{\squareref}[1]{
+  \hbox{%
+    \usebeamerfont*{item projected}%
+    \usebeamercolor[bg]{item projected}%
+    \vrule width2.25ex height1.85ex depth.4ex%
+    \hskip-2.25ex%
+    \hbox to2.25ex{%
+      \hfil%
+      \color{fg}\ref{#1}%
+      \hfil}%
+  }%
+}
+
+\frame{\titlepage}
+
+\title{Alo\color{lightgray}alonzo\color{white}nzo}
+\frame{\titlepage}
+
+\author{Christopher Schankula \& Dennis Yankovsky}
+
+\section{Introduction}
+\begin{frame}
+\frametitle{Scope}
+\begin{itemize}
+\item The scope for the project was to encode Alonzo types, expressions, free and bound variables, and 
+substitutions in Alonzo
+\item Stretch goals include encoding theories and semantics
+\item For brevity, this presentation will focus only on types, pre-expressions and expressions
+\end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Goals}
+% \begin{itemize}
+% \item Use Alonzo to describe and formalize Alonzo syntax
+% \item Allow users to write expressions in a type-safe way
+% \item Encode Alonzo syntax rules in such a way that syntax errors are impossible
+% \item Gain a deeper understanding of Alonzo's type system and how expressions and types are constructed
+% \end{itemize}
+% \end{frame}
+
+\begin{frame}
+\frametitle{Conventions: The first major problem!}
+\begin{itemize}
+\item As we started talking about the project, within 5 minutes we realized we were getting ourselves confused really easily!
+\item For example, does the word ``type'' refer to an actual Alonzo type, or a type in our new ``Alonzo''?
+\item Thus, we settled on some conventions we will use throughout the presentation:
+    \begin{itemize}
+    \item ``Outer Alonzo'' refers to the ``real'' Alonzo we all know and love
+    \item ``Inner Alonzo'' or ``Alo'' refers to our encoding of Alonzo inside Alonzo
+    \item ``Alo'' type constructors all have the suffix ``AloTy'' to differentiate them from outer Alonzo's type constructors
+    \item Similarly, ``Alo'' expression constructors all have the suffix ``Expr''
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{``But wait! Alonzo inside Alonzo? Is that even possible?''}
+\begin{itemize}
+\item Nope \cite{smullyan1992godel}. Not entirely, anyway.
+\item<only@2> Tarski's theorem of the undefinability of truth; sufficiently strong systems cannot formalize their own semantics
+\item<only@2> G\"{o}del's second incompleteness theorem; proving consistency
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Two different approaches}
+\begin{itemize}
+\item In our early discussions with Bill, we identified two different approaches we could take:
+    \begin{enumerate}
+        \item Alonzo expressions as strings of characters
+        \item Alonzo expressions as an abstract syntax tree
+    \end{enumerate}
+\item We decided to take approach \#2 as it more closely matches Alonzo's definition, and it is easier to
+reason about
+\end{itemize}
+\end{frame}
+
+\section{Strings}
+\begin{frame}
+\frametitle{Strings}
+\begin{thydef}[Strings]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\vspace{-0.5cm}
+\item<only@1>[]\hspace{-3ex}\textbf{Name:} $\mName{STR}$
+\item<only@1>[]\hspace{-3ex}\textbf{Base types:} $C, S$
+\item<only@1>[]\hspace{-3ex}\textbf{Constants:}\newline
+{$\text{Stringify}_{\cFunTyX{\cBaseTy{C}}{\cBaseTy{S}}}$, $\text{Append}_{\cFunTyBX{\cBaseTy{C}}{\cBaseTy{S}}{\cBaseTy{S}}}$,
+$A_C, B_C, C_C, ... , Z_C$.}
+\item<only@2>[]\hspace{-3ex}\textbf{Axioms:}
+{\be
+\item $\cDistinctL{A,B,C,...,Z}$
+\item $\forall c_1, c_2: \text{C}, s: S\ .\ \text{Stringify } c_1 \neq \text{Append } c_2\ s$
+\item $\cInj{\text{Stringify}}$
+\item $\cTotal{\text{Stringify}}$
+\item $\cInjB{\text{Append}}$
+\item $\cTotalB{\text{Append}}$
+\item $\cForallX{p}{\cFunTyX{\text{S}}{\cB}}{\cForall{c}{C}{\cFunAppX{p} {(\text{Stringify}\ c)}}} \land$
+%%%%%%%%%%%%%%%%%%%
+$\cForallB{c}{C}{s}{S}{\cFunAppX{p}{s} \Implies
+\cFunAppX{p}{\cFunApp{\text{Append}\ c\ s}}}$
+%%%%%%%%%%%%%%%%%%%
+$\Implies \cForallX{s}{\text{S}}{\cFunAppX {p}{s}}$
+\ee}
+\end{itemize}
+\end{thydef}
+\only<1>{
+New notational definition: 
+
+$``\textbf{C}^0_C\textbf{C}^1_C....\textbf{C}^n_C"$ stands for $\text{Append}\ \textbf{C}^0_C\ (\text{Append}\ \textbf{C}^1_C\ ... (\text{Stringify}\ \textbf{C}^n_C)...)$}
+\only<2>{\vspace{-1mm}
+\be
+\item[\boxednumber{1}-\boxednumber{6}] ensure ``no confusion'': each member of $S$ is denoted by
+exactly one constructor
+\item[\boxednumber{7}] is the induction principle for $S$ and ensures ``no junk''
+\ee
+}
+\end{frame}
+
+\section{Types}
+\begin{frame}
+\frametitle{Types}
+\begin{thyext}[Types]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\vspace{-0.5cm}
+\item[]\hspace{-3ex}\textbf{Name:} $\mName{TY}$
+\item[]\hspace{-3ex}\textbf{Extends\ } $\mName{STR}$
+\item[]\hspace{-3ex}\textbf{New base types:} $AloTy$
+\item[]\hspace{-3ex}\textbf{New constants:}\newline
+$\text{BoolAloTy}_{AloTy}$
+
+$\text{BaseAloTy}_{\cFunTyX{S}{AloTy}}$
+
+$\text{FunAloTy}_{\cFunTyBX{AloTy}{AloTy}{AloTy}}$
+
+$\text{ProdAloTy}_{\cFunTyBX{AloTy}{AloTy}{AloTy}}$
+
+$\text{isBoolAloTy}_{\cFunTyX{AloTy}{\cB}}$
+\end{itemize}
+\end{thyext}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Type Axioms}
+\vspace{-2mm}
+\begin{thyext}[Types]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\setlength{\leftmargini}{0pt}\vspace{-0.5cm}
+\item[]\hspace{-3ex}\textbf{New Axioms:}
+\begin{enumerate}
+\item<only@1>$\forall a, b, c, d: \text{AloTy}, s: S\ .\ \text{DISTINCT}(\text{BoolAloTy}, \text{BaseAloTy s},$ $\text{FunAloTy a b},\text{ProdAloTy c d})$
+
+\item<only@1> $\cInj{\text{BaseAloTy}}$
+
+\item<only@1> $\cInjB{\text{FunAloTy}}$
+
+\item<only@1> $\cInjB{\text{ProdAloTy}}$
+
+\item<only@1> $\cTotal{\text{BaseAloTy}}$
+
+\item<only@1> $\cTotalB{\text{FunAloTy}}$
+
+\item<only@1> $\cTotalB{\text{ProdAloTy}}$
+
+\item<only@1> $\text{isBoolAloTy} = \cFunAbs{t}{\text{AloTy}}{t = \text{BoolAloTy}}$
+
+\item<only@2> $\cForallX{p}{\cFunTyX{\text{AloTy}}{\cB}}{\cFunApp{p}
+{\text{BoolAloTy}}} \land$
+%%%%%%%%%%%%%%%%%%%
+$\cForall{s}{S}{\cFunAppX{p} {(\text{BaseAloTy}\ s)}} \land$
+%%%%%%%%%%%%%%%%%%%
+$\cForallB{t}{\text{AloTy}}{u}{\text{AloTy}}{\cFunAppX{p}{t} \land
+\cFunAppX{p}{u} \Implies
+\cFunAppX{p}{\cFunAppB{\text{FunAloTy}}{t}{u}}} \land$
+%%%%%%%%%%%%%%%%%%%
+$\cForallB{t}{\text{AloTy}}{u}{\text{AloTy}}{\cFunAppX{p}{t} \land
+\cFunAppX{p}{u} \Implies
+\cFunAppX{p}{\cFunAppB{\text{ProdAloTy}}{t}{u}}}$
+%%%%%%%%%%%%%%%%%%%
+$\Implies \cForallX{t}{\text{AloTy}}{\cFunAppX {p}{t}}$
+\end{enumerate}
+\end{itemize}
+\end{thyext}
+\only<1>{\vspace{-2mm}\footnotesize
+\begin{enumerate}
+\item[\boxednumber{1}-\boxednumber{7}] ensure ``no confusion'': each member of $AloTy$ is denoted by
+exactly one constructor
+\item[\boxednumber{8}] is the definition of $isBoolAloTy$
+\end{enumerate}
+}
+\only<2>{
+\begin{enumerate}
+\item[\boxednumber{9}] is the induction principle for the $AloTy$ type. It ensures there is ``no junk''
+\end{enumerate}
+}
+\end{frame}
+
+\section{Pre-Expressions}
+\begin{frame}
+\frametitle{Pre-Expressions}
+\begin{itemize}
+\item Pre-Expressions are expressions which are (almost! we'll explain...) syntactically correct, but not necessarily correct in 
+terms of their types (recall Assignment 2 question 2)
+\item Later we will describe how we ``sanitize'' them such that they are guaranteed to be well-formed 
+expressions
+\item (Too bad we didn't have this when solving A2Q2!)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pre-Expressions}
+\vspace{-2mm}
+\begin{thyext}[Pre-Expressions]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\vspace{-0.5cm}
+\item[]\hspace{-3ex}\textbf{Name:} $\mName{PREXPR}$
+\item[]\hspace{-3ex}\textbf{Extends\ } $\mName{TY}$
+\item[]\hspace{-3ex}\textbf{New base types:} $Expr$
+\item[]\hspace{-3ex}\textbf{New constants:}\newline
+$\text{VarExpr}_{\cFunTyBX{S}{AloTy}{Expr}}$
+
+$\text{ConstExpr}_{\cFunTyBX{S}{AloTy}{Expr}}$
+
+$\text{EqExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},$
+
+$\text{FunAppExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}$
+
+$\text{FunAbsExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}$
+
+$\text{DefDesExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}$
+
+$\text{OrdPairExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}$
+\end{itemize}
+\end{thyext}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pre-Expressions}
+\vspace{-2mm}
+\begin{thyext}[Pre-Expressions]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\vspace{-0.5cm}
+\item[]\hspace{-3ex}\textbf{New Axioms:}
+\be
+\item<only@1>$\forall e_1, e_2, e_3, e_4, e_5, e_6, e_7, e_8, e_9,
+e_{10}: \text{Expr}, t_1, t_2: \text{AloTy}, s_1, s_2: S\ .$
+$\mName{DISTINCT}(\cFunAppBX{\text{VarExpr}}{s_1}{t_1},
+\cFunAppBX{\text{ConstExpr}}{s_2}{t_2},
+\cFunAppBX{\text{EqExpr}}{e_1}{e_2},$
+
+$\cFunAppBX{\text{FunAppExpr}}{e_3}{e_4},
+\cFunAppBX{\text{FunAbsExpr}}{e_5}{e_6},
+\cFunAppBX{\text{DefDesExpr}}{e_7}{e_8},$
+
+$\cFunAppBX{\text{OrdPairExpr}}{e_9}{e_{10}})$
+\item<only@1>[\boxednumber{2}-\boxednumber{8}] (all constructors are injective)
+\item<only@1>[\boxednumber{9}-\boxednumber{15}] (all constructors are total)
+\item<only@2>[\boxednumber{16}] $\cForallX{p}{\cFunTyX{\text{Expr}}{\cB}}{ \cForallB{s}{S}{t}{\text{AloTy}}{\cFunAppX{p}{(\cFunAppBX{\text{VarExpr}}{s}{t})}} \land$
+$\cForallB{s}{S}{t}{\text{AloTy}}{\cFunAppX{p}
+{(\cFunAppBX{\text{ConstExpr}}{s}{t})}} \land$
+%%%%%%%%%%%%%%%%
+$\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\text{EqExpr}}{e_1 e_2}}} \land$
+
+%%%%%%%%%%%%%%%%
+$\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\text{FunAppExpr}}{e_1 e_2}}} \land$
+
+%%%%%%%%%%%%%%%%
+$\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\text{FunAbsExpr}}{e_1 e_2}}} \land$
+
+%%%%%%%%%%%%%%%%
+$\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\text{DefDesExpr}}{e_1 e_2}}} \land$
+
+%%%%%%%%%%%%%%%%
+$\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\text{OrdPairExpr}}{e_1 e_2}}}$
+
+%%%%%%%%%%%%%%%%
+$\Implies \cForallX{e}{\text{Expr}}{\cFunAppX {p}{e}}}$
+\ee
+\end{itemize}
+\end{thyext}
+\only<1>{
+\begin{enumerate}
+\item[\boxednumber{1}-\boxednumber{15}] ensure ``no confusion'': each member of $Expr$ is denoted by
+exactly one constructor
+\end{enumerate}
+}
+\only<2>{
+\begin{enumerate}
+\item[\boxednumber{16}] is the induction principle for the $Expr$ type. It ensures there is ``no junk''
+\end{enumerate}
+}
+\end{frame}
+
+\section{Expressions}
+\begin{frame}
+\frametitle{(Sanitized) Expressions}
+\begin{itemize}
+\item As mentioned previously, simply using the constructors of the type \texttt{Expr} will give you 
+(almost!) syntactically-correct expressions, but not necessarily ones which are ``type''-correct according
+to the textbook section 4.4
+\item Recall from A2Q2 that we can easily ``write down'' any expression, but that doesn't mean it's well-formed
+in a type (or syntax) sense
+\item Our constructors provide an embedding that almost eliminates ``inner Alonzo'' syntax errors by 
+construction (making them type errors in ``outer Alonzo'')
+\item But ``not quite'' because $FunAbsExpr, FunAppExpr$ and $DefDesExpr$ accept
+any expression as their first argument, whereas the textbook is a bit more restrictive. We'll fix this in a
+moment!
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{(Sanitized) Expressions}
+\begin{itemize}
+\item We will create new ``smart constructors'' (called $*VExpr$) which are only defined when returning 
+properly-typed $Expr$s
+\item We will introduce three new constants as well:
+
+\begin{itemize}
+\item $\text{hasAloTy}_{\cFunTyX{Expr}{AloTy}}$: assigns types to well-formed expressions
+
+\item$\text{VE}_{\{Expr\}}$: represents a quasitype of expressions which are well-formed
+
+\item$\text{sane}_{\cFunTyX{Expr}{Expr}}$: ``sanitizes'' an expression, returning only if valid
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Expressions}
+\footnotesize
+\vspace{-2mm}
+\begin{thyext}[Expressions]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\vspace{-0.5cm}
+\item[]\hspace{-3ex}\textbf{Name:} $\mName{EXPR}$
+\item[]\hspace{-3ex}\textbf{Extends\ } $\mName{PREXPR}$
+\item[]\hspace{-3ex}\textbf{New base types:} N/A
+\item[]\hspace{-3ex}\textbf{New constants:}\newline
+$\text{VarVExpr}_{\cFunTyBX{S}{AloTy}{Expr}},$
+\vspace{-1mm}
+
+$\text{ConstVExpr}_{\cFunTyBX{S}{AloTy}{Expr}},$
+\vspace{-1mm}
+
+$\text{EqVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},$
+\vspace{-1mm}
+
+$\text{FunAppVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},$
+\vspace{-1mm}
+
+$\text{FunAbsVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},$
+\vspace{-1mm}
+
+$\text{DefDesVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},$
+\vspace{-1mm}
+
+$\text{OrdPairVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},$
+\vspace{-1mm}
+
+$\text{hasAloTy}_{\cFunTyX{Expr}{AloTy}},$
+\vspace{-1mm}
+
+$\text{VE}_{\{Expr\}},$
+\vspace{-1mm}
+
+$\text{sane}_{\cFunTyX{Expr}{Expr}}$
+\end{itemize}
+\end{thyext}
+\end{frame}
+
+\begin{frame}
+\frametitle{Expressions}
+\footnotesize
+\vspace{-2mm}
+\begin{thyext}[Expressions]
+\noindent
+\begin{itemize} \setlength{\itemsep}{0pt}\vspace{-6mm}
+\item[]\hspace{-3ex}\textbf{New Axioms:}
+\be
+\item<only@1> \scriptsize{
+        $\text{hasAloTy} = \cFunAbsX{e}{\text{Expr}}{}\cDefDesX{t}{\text{AloTy}}{}$
+        
+        $\cForsomeUnique{s}{S}{e = \cFunAppB{\text{VarExpr}}{s}{t}}$
+        
+        $\lor \cForsomeUnique{s}{S}{e = \cFunAppB{\text{ConstExpr}}{s}{t}}$
+        
+        $\lor \cForsomeUnique{e_1,e_2}{\text{Expr}}{e = (\cFunAppBX{\text{EqExpr}}{e_1}{e_2}) \land \cFunAppX{\text{hasAloTy}}{e_1} = \cFunAppX{\text{hasAloTy}}{e_2} \land isBoolAloTy\ t}$
+        
+        $\lor \cForsomeUniqueB{e_1, e_2}{\text{Expr}}{t'}{\text{AloTy}}{e = (\cFunAppBX{\text{FunAppExpr}}{e_1}{e_2}) \land \cFunAppX{\text{hasAloTy}}{e_1} =\\\cFunAppB{\text{FunAloTy}}{t'}{t} \land \cFunAppX{\text{hasAloTy}}{e_2} = t'}$
+        
+        $\lor \cForsomeUniqueC{e'}{\text{Expr}}{t'}{\text{AloTy}}{s}{S}{e = \cFunAppB{\text{FunAbsExpr}}{\cFunAppB{\text{VarExpr}}{s}{t'}}{e'} \land t = \cFunAppB{\text{FunAloTy}}{t'}{\cFunApp{\text{hasAloTy}}{e'}}}$
+        
+        $\lor \cForsomeUniqueB{e'}{\text{Expr}}{s}{S}{e = \cFunAppB{\text{DefDesExpr}}{\cFunAppB{\text{VarExpr}}{s}{t}}{e'} \land \neg \text{isBoolAloTy}\ t \land \cFunAppX{\text{isBoolAloTy}}{} {\cFunApp{\text{hasAloTy}}{e'}}}$
+        
+        $\lor \cForsomeUnique{e_1,e_2}{\text{Expr}}{(e = \cFunAppBX{\text{OrdPairExpr}}{e_1}{e_2}) \land t = \cFunAppBX{\text{ProdAloTy}}{\cFunApp{\text{hasAloTy}}{e_1}}{}{\cFunApp{\text{hasAloTy}}{e_2}}}$}
+\item<only@2,6> \scriptsize$\text{VE}_{\cSetTy{Expr}} = {\sf dom}(\text{hasAloTy})$
+\item<only@3,6> \scriptsize$\text{sane} = \cFunAbsQTyX{e}{\text{VE}_{\cSetTy{Expr}}}{e}$
+\item<only@4,6> \scriptsize$\text{VarVExpr} = \text{VarExpr}$
+\item<only@4,6> \scriptsize$\text{ConstVExpr} = \text{ConstExpr}$
+\item<only@5,6> \scriptsize$\text{EqVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{EqExpr}}{e_1}{e_2}}}$
+\item<only@5,6> \scriptsize$\text{FunAppVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{FunAppExpr}}{e_1}{e_2}}}$
+\item<only@5,6> \scriptsize$\text{FunAbsVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{FunAbsExpr}}{e_1}{e_2}}}$
+\item<only@5,6> \scriptsize$\text{DefDesVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{DefDesExpr}}{e_1}{e_2}}}$
+\item<only@5,6> \scriptsize$\text{OrdPairVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{OrdPairExpr}}{e_1}{e_2}}}$
+\ee
+\end{itemize}
+\end{thyext}
+\only<1>{
+\vspace{-3mm}
+\begin{itemize}
+    \item[\boxednumber{1}] Defines the rules for valid types of an expression, according to the textbook. 
+    \item This function is undefined for ill-formed expressions
+\end{itemize}
+}
+\vspace{-3mm}
+\begin{itemize}
+    \item<only@2,6>[\boxednumber{2}]: valid expressions are expressions for which the $hasAloTy$ function is defined (i.e. its domain)
+    \item<only@3,6>[\boxednumber{3}]: the $sane$ function permits only valid expressions
+    \item<only@4,6>[\boxednumber{4}\&\boxednumber{5}]: variables and constants are always defined
+    \item<only@5,6>[\boxednumber{6}-\boxednumber{10}]: others are validated by running them through $sane$
+\end{itemize}
+\end{frame}
+
+\section{Analysis \& Conclusions}
+
+\begin{frame}
+\frametitle{Analysis: Tree Approach}
+\begin{itemize}
+
+\item Recall the two possible approaches we discussed earlier:
+    \begin{enumerate}
+        \item Alonzo expressions as strings of characters
+        \item Alonzo expressions as an abstract syntax tree
+    \end{enumerate}
+\item<only@1> We decided to take approach \#2 as it more closely matches Alonzo's definition
+\item<only@1> This approach worked very well, as it allowed us to reason at a higher level than with the string approach
+\item<only@1> Building \#1 on top of number \#2 is easier than the other way around
+    \begin{itemize}
+    \item This would be like a ``parsing'' step, turning the strings into the AST
+    \end{itemize}
+\item<only@1> Would recommend building the ``string'' approach atop this work
+\item<only@2> One drawback: repetitive and tedious axioms for ``no confusion'' and ``no junk''
+\item<only@2> Would recommend adding algebraic data types to Alonzo
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Analysis: Use of Quasitypes}
+\begin{itemize}
+
+\item Pros:  
+\begin{itemize}
+    \item Easy to reason about
+    \item Use the domain of our $hasAloTy$ to define valid expressions: very clean and little repetition
+\end{itemize} 
+\item Cons:  
+\begin{itemize}
+    \item No type-level separation between well-formed and ill-formed expressions or between our constructors
+    \item Need to define pretty repetitive smart constructors to use the quasitype
+\end{itemize} 
+\item Use of sorts should be explored to alleviate these issues
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusions \& Future Work}
+\begin{itemize}
+\item Talking about encoding a system in the same system is difficult!
+\item This was a very interesting project that deepened our understanding of Alonzo.
+\item Work to be submitted with report:
+\begin{itemize}
+    \item Theory of free \& bound variables
+    \item Theory of substitutions
+\end{itemize}
+\item Future work after this project:
+\begin{itemize}
+    \item Theory of thoeries
+    \item Theory of Alonzo semantics
+    \item Theories for additional notation (quantifiers, etc)
+    \item Theories for human-readable notation
+\end{itemize}
+\item Long-term future work should explore using this as a basis for an Alonzo programming language / IDE
+\item Another future goal: implement Alo in Alo (and so on...) \smiley{}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\centering
+\frametitle{Thank you! Questions?}
+\includegraphics[width=10cm]{Alonzo.png}
+\end{frame}
+
+
+% \section{Free \& Bound Variables}
+% \begin{frame}
+% \frametitle{Sample frame title}
+% This is some text in the first frame. This is some text in the first frame. This is some text in the first frame.
+% \end{frame}
+
+
+% \section{Substitutions}
+% \begin{frame}
+% \frametitle{Sample frame title}
+% This is some text in the first frame. This is some text in the first frame. This is some text in the first frame.
+% \end{frame}
+
+\begin{frame}{References}
+    \bibliographystyle{unsrtnat}
+    \bibliography{main}
+\end{frame}
+
+\section{Appendix}
+\begin{frame}{Appendix}
+$\mName{INJ2} \text{ stands for }
+\cFunAbs{f}{\cFunTyBX{\alpha}{\beta}{\gamma}}{\cInj{\cDefDesX{g}{\cFunTyX{\alpha \times \beta}{\gamma}}{\cForallBX{a}{\alpha}{b}{\beta}{\cQuasiEq{\cFunAppX{g}{(a,b)}}{\cFunAppBX{f}{a}{b}}}}}}
+$
+\end{frame}
+
+\end{document}

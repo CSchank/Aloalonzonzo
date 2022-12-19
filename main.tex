@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{fancyvrb}
 
 \input{simple-type-theory-def}
 \input{alonzo-notation}
@@ -11,7 +12,7 @@
 
 
 \title{Alo\color{lightgray}{alonzo}\color{black}nzo}
-\author{Christopher Schankula, Student ID: 400026650, MacID: schankuc\\ Dennis Yankovsky, Student ID: 400189961, MacID: yankovsd\\Group 1 (``The Self-Referentialists'')}
+\author{Christopher Schankula, Student ID: 400026650, MacID: schankuc\\ Dennis Yankovsky, Student ID: 400189961, MacID: yankovsd\\Group 1 (``We are the Self-Referentialists'')}
 \date{December 2022}
 
 \begin{document}
@@ -19,12 +20,20 @@
 \maketitle
 
 \section{Introduction}
+The goal of this project is to formalize Alonzo types and expressions, the notion of free and bound variables,
+and the notion of substitution, in Alonzo.
 
-$\mName{INJ2} \text{ stands for }
-\cFunAbs{f}{\cFunTyBX{\alpha}{\beta}{\gamma}}{\cInj{\cDefDesX{g}{\cFunTyX{\alpha \times \beta}{\gamma}}{\cForallBX{a}{\alpha}{b}{\beta}{\cFunAppX{g}{(a,b)} = \cFunAppBX{f}{a}{b}}}}}
-$
+\section{New Notational Definitions}
+The following new notational definitions will be used throughout this document:
+
+\noindent$\mName{INJ2}_{\cFunTyX{\cFunTyB{\alpha}{\beta}{\gamma}}{\cB}} \text{ stands for }
+\cFunAbs{f}{\cFunTyBX{\alpha}{\beta}{\gamma}}{\cInj{\cDefDesX{g}{\cFunTyX{\alpha \times \beta}{\gamma}}{\cForallBX{a}{\alpha}{b}{\beta}{\cFunAppX{g}{(a,b)} \simeq \cFunAppBX{f}{a}{b}}}}}
+$\\
+
+\noindent$\mName{-_{\cFunTyBX{\{\alpha\}}{\{\alpha\}}{\{\alpha\}}}} \text{ stands for } \cFunAbsX{A}{\cSetTy{\alpha}}{\cFunAbsX{B}{\cSetTy{\alpha}}{A \cap \overline{B}}}$
 
 \newpage
+\section{Modules}
 \begin{theory-def}
 % Human-Readable Name
 {Strings}
@@ -35,12 +44,41 @@ $
 % Constants
 % S = string
 % C = char
-{$\text{stringify}_{\cFunTyX{\cBaseTy{C}}{\cBaseTy{S}}}$, $\text{append}_{\cFunTyBX{\cBaseTy{C}}{\cBaseTy{S}}{\cBaseTy{S}}}$,
+{$\mName{Stringify}_{\cFunTyX{\cBaseTy{C}}{\cBaseTy{S}}}$, $\mName{Append}_{\cFunTyBX{\cBaseTy{C}}{\cBaseTy{S}}{\cBaseTy{S}}}$,
 $A_C, B_C, C_C, ... , Z_C$.}
 % Axioms
-{N/A}
 {}
+{\be
+\item $\cDistinctL{A,B,C,...,Z} \axNote{all characters are distinct}$
+\item $\forall c_1, c_2: \mName{C}, s: S\ .\ \mName{Stringify } c_1 \neq \mName{Append } c_2\ s \axNoteNL{no confusion between Stringify and Append constructors}$
+\item $\cInj{\mName{Stringify}} \axNote{no confusion}$
+\item $\cTotal{\mName{Stringify}} \axNote{no confusion}$
+\item $\cInjB{\mName{Append}} \axNote{no confusion}$
+\item $\cTotalB{\mName{Append}} \axNote{no confusion}$
+\item $\cForallX{p}{\cFunTyX{S}{\cB}}{\cForall{c}{C}{\cFunAppX{p} {(\mName{Stringify}\ c)}}} \land\\
+%%%%%%%%%%%%%%%%%%%
+\cForallB{c}{C}{s}{S}{\cFunAppX{p}{s} \Implies
+\cFunAppX{p}{\cFunAppB{\mName{Append}}{c}{s}}}\\
+%%%%%%%%%%%%%%%%%%%
+\Implies \cForallX{s}{S}{\cFunAppX {p}{s}}
+\axNote{induction principle for strings}$
+\ee}
 \end{theory-def}
+
+% \begin{theory-def}
+%     {Strings}
+%     {$\mName{STR}$.}
+%     {$N$, $C$}
+%     {$\mName{Nums}_{\{N\}},$
+%     $A_C, B_C, C_C, ... , Z_C,$
+%     ${\sf strings}_{\{N \rightarrow C\}}$}
+%     {}
+%     {
+%     \be
+%         \item ${\sf strings} = $
+%     \ee
+%     }
+% \end{theory-def}
 
 \begin{theory-ext}
 % Human-Readable Name
@@ -52,107 +90,107 @@ $A_C, B_C, C_C, ... , Z_C$.}
 % New base types
 {$AloTy$.}
 % New constants
-{$\\\text{BoolAloTy}_{AloTy},\\
-\text{BaseAloTy}_{\cFunTyX{S}{AloTy}},\\
-\text{FunAloTy}_{\cFunTyBX{AloTy}{AloTy}{AloTy}},\\
-\text{ProdAloTy}_{\cFunTyBX{AloTy}{AloTy}{AloTy}},\\
+{$\\\mName{BoolAloTy}_{AloTy},\\
+\mName{BaseAloTy}_{\cFunTyX{S}{AloTy}},\\
+\mName{FunAloTy}_{\cFunTyBX{AloTy}{AloTy}{AloTy}},\\
+\mName{ProdAloTy}_{\cFunTyBX{AloTy}{AloTy}{AloTy}},\\
 %%%%% Functions for assigning types %%%%%
-\text{isBoolAloTy}_{\cFunTyX{AloTy}{\cB}},\\
-\text{getBaseAloTy}_{\cFunTyX{AloTy}{S}},\\
-\text{getFunAloTy}_{\cFunTyX{AloTy}{AloTy \times AloTy}},\\
-\text{getProdAloTy}_{\cFunTyX{AloTy}{AloTy \times AloTy}}
+\mName{isBoolAloTy}_{\cFunTyX{AloTy}{\cB}},\\
+\mName{getBaseAloTy}_{\cFunTyX{AloTy}{S}},\\
+\mName{getFunAloTy}_{\cFunTyX{AloTy}{AloTy \times AloTy}},\\
+\mName{getProdAloTy}_{\cFunTyX{AloTy}{AloTy \times AloTy}}
 $}
 % Axiom N/A
 {}
 % Axioms
 {
 \be
-\item $\forall a, b, c, d: \text{AloTy}, s: S\ .\ \cDistinctL{\text{BoolAloTy}, \text{BaseAloTy s}, \\\text{FunAloTy (a, b)}, \text{ProdAloTy (c, d)}} \axNoteNL{no confusion}$
+\item $\forall a, b, c, d: AloTy, s: S\ .\ \cDistinctL{\mName{BoolAloTy}, \mName{BaseAloTy s}, \\\mName{FunAloTy a b}, \mName{ProdAloTy c d}} \axNoteNL{no confusion}$
 
-\item $\cInj{\text{BaseAloTy}} \axNote{no confusion}$
+\item $\cInj{\mName{BaseAloTy}} \axNote{no confusion}$
 
-\item $\cInjB{\text{FunAloTy}} \axNote{no confusion}$
+\item $\cInjB{\mName{FunAloTy}} \axNote{no confusion}$
 
-\item $\cInjB{\text{ProdAloTy}} \axNote{no confusion}$
+\item $\cInjB{\mName{ProdAloTy}} \axNote{no confusion}$
 
-\item $\cTotal{\text{BaseAloTy}} \axNote{all strings have a corresponding base type}$
+\item $\cTotal{\mName{BaseAloTy}} \axNote{all strings have a corresponding base type}$
 
-\item $\cTotalB{\text{FunAloTy}} \axNote{functions accept all types}$
+\item $\cTotalB{\mName{FunAloTy}} \axNote{functions accept all types}$
 
-\item $\cTotalB{\text{ProdAloTy}} \axNote{products accept all types}$
+\item $\cTotalB{\mName{ProdAloTy}} \axNote{products accept all types}$
 
-\item $\text{isBoolAloTy} = \cFunAbs{t}{\text{AloTy}}{t = \text{BoolAloTy}} \axNote{definition of isBoolAloTy}$
+\item $\mName{isBoolAloTy} = \cFunAbs{t}{AloTy}{t = \mName{BoolAloTy}} \axNote{definition of isBoolAloTy}$
 
-\item $\cForallX{p}{\cFunTyX{\text{AloTy}}{\cB}}{\cFunApp{p}
-{\text{BoolAloTy}} \land \\
+\item $\cForallX{p}{\cFunTyX{AloTy}{\cB}}{\cFunApp{p}
+{\mName{BoolAloTy}} \land \\
 %%%%%%%%%%%%%%%%%%%
-\cForall{s}{S}{\cFunAppX{p} {(\text{BaseAloTy}\ s)}} \land\\
+\cForall{s}{S}{\cFunAppX{p} {(\mName{BaseAloTy}\ s)}} \land\\
 %%%%%%%%%%%%%%%%%%%
-\cForallB{t}{\text{AloTy}}{u}{\text{AloTy}}{\cFunAppX{p}{t} \land
+\cForallB{t}{AloTy}{u}{AloTy}{\cFunAppX{p}{t} \land
 \cFunAppX{p}{u} \Implies
-\cFunAppX{p}{\cFunApp{\text{FunAloTy}}{(t,u)}}} \land\\
+\cFunAppX{p}{\cFunAppB{\mName{FunAloTy}}{t}{u}}} \land\\
 %%%%%%%%%%%%%%%%%%%
-\cForallB{t}{\text{AloTy}}{u}{\text{AloTy}}{\cFunAppX{p}{t} \land
+\cForallB{t}{AloTy}{u}{AloTy}{\cFunAppX{p}{t} \land
 \cFunAppX{p}{u} \Implies
-\cFunAppX{p}{\cFunApp{\text{ProdAloTy}}{(t,u)}}} 
+\cFunAppX{p}{\cFunAppB{\mName{ProdAloTy}}{t}{u}}} 
 %%%%%%%%%%%%%%%%%%%
-\\\Implies \cForallX{t}{\text{AloTy}}{\cFunAppX {p}{t}}}
+\\\Implies \cForallX{t}{AloTy}{\cFunAppX {p}{t}}}
 \axNoteNL{induction principle for AloTy}$
 
-% \item $\cForallX{t}{\text{AloTy}}{t \neq \text{BoolAloTy} \Implies \neg \ \text{isBoolAloTy}\ t} \axNoteNL{only BoolAloTys are booleans}$
+% \item $\cForallX{t}{AloTy}{t \neq \mName{BoolAloTy} \Implies \neg \ \mName{isBoolAloTy}\ t} \axNoteNL{only BoolAloTys are booleans}$
 
-% \item $\cForallX{s}{\text{AloTy}}{\text{getBaseAloTy (BaseAloTy s)} = s} \axNoteNL{base types are extractable}$
+% \item $\cForallX{s}{AloTy}{\mName{getBaseAloTy (BaseAloTy s)} = s} \axNoteNL{base types are extractable}$
 
-% \item $\cForallBX{s}{\text{AloTy}}{t}{\text{AloTy}}{s \neq \text{BaseAloTy t} \Implies \cIsUndefX{(\text{getBaseAloTy}\ s)}} \axNoteNL{base type extractability law}$
+% \item $\cForallBX{s}{AloTy}{t}{AloTy}{s \neq \mName{BaseAloTy t} \Implies \cIsUndefX{(\mName{getBaseAloTy}\ s)}} \axNoteNL{base type extractability law}$
 
-\item $\text{getFunAloTy} = \cFunAbs{t}{\text{AloTy}} {\cDefDesX{s}{\text{S}}{t = \text{BaseAloTy}\ s
+\item $\mName{getFunAloTy} = \cFunAbs{t}{AloTy} {\cDefDesX{s}{\mName{S}}{t = \mName{BaseAloTy}\ s
     }}
     \axNoteNL{base type extractability law}
     $
 
-% \item $\cForallBX{s}{\text{AloTy}}{t}{\text{AloTy}}{\text{getFunAloTy (FunAloTy a b)} = (a, b)} \axNoteNL{function types are extractable}$
+% \item $\cForallBX{s}{AloTy}{t}{AloTy}{\mName{getFunAloTy (FunAloTy a b)} = (a, b)} \axNoteNL{function types are extractable}$
 
-% \item $\cForallCX{s}{\text{AloTy}}{t}{\text{AloTy}}{u}{\text{AloTy}}{s \neq \text{FunAloTy t u} \Implies \cIsUndefX{(\text{getFunAloTy}\ s)}} \axNoteNL{function type extractbility law}$
-
-% \item $\text{getFunAloTy} = 
+% \item $\cForallCX{s}{AloTy}{t}{AloTy}{u}{AloTy}{s \neq \mName{FunAloTy t u} \Implies \cIsUndefX{(\mName{getFunAloTy}\ s)}} \axNoteNL{function type extractbility law}$
+% spa
+% \item $\mName{getFunAloTy} = 
 % \cFunAbsX{t}{AloTy}{
-% \cDefDesX{p}{\text{AloTy}\times \text{AloTy}}{\cForsomeB{u}{\text{AloTy}}
-%         {v}{\text{AloTy}}
-%         {t = \text{FunAloTy} (u, v) \land p = (u, v)}
+% \cDefDesX{p}{AloTy\times AloTy}{\cForsomeB{u}{AloTy}
+%         {v}{AloTy}
+%         {t = \mName{FunAloTy} (u, v) \land p = (u, v)}
 %     }}
 %     \axNoteNL{function type extractability law}
 %     $
     
-\item $\text{getFunAloTy} = 
-\cFunAbs{t}{\text{AloTy}}{
-\cDefDesX{p}{\text{AloTy}\times \text{AloTy}}{
-        {t = \text{FunAloTy}\ p}
+\item $\mName{getFunAloTy} = 
+\cFunAbs{t}{AloTy}{
+\cDefDesX{p}{AloTy\times AloTy}{
+        {t = \mName{FunAloTy}\ p}
     }}
     \axNoteNL{function type extractability law}
     $
 
-% \item $\cForallBX{a}{\text{AloTy}}{b}{\text{AloTy}}{\text{getProdAloTy (ProdAloTy a b)} = (a, b)} \axNoteNL{product types are extractable}$
+% \item $\cForallBX{a}{AloTy}{b}{AloTy}{\mName{getProdAloTy (ProdAloTy a b)} = (a, b)} \axNoteNL{product types are extractable}$
 
-% \item $\cForallX{s}{\text{AloTy}}{(\cIfX{\cForsomeB{t}{\text{AloTy}}
-%         {u}{\text{AloTy}}
-%         {s = \text{ProdAloTy t u}}
+% \item $\cForallX{s}{AloTy}{(\cIfX{\cForsomeB{t}{AloTy}
+%         {u}{AloTy}
+%         {s = \mName{ProdAloTy t u}}
 %     }
-%     {\cIsDefX{(\text{getProdAloTy}\ s)}}
-%     {\cIsUndefX{(\text{getProdAloTy}\ s)}})}
+%     {\cIsDefX{(\mName{getProdAloTy}\ s)}}
+%     {\cIsUndefX{(\mName{getProdAloTy}\ s)}})}
 %     \axNoteNL{product type extractability law}
 %     $
 
-\item $\text{getProdAloTy} = 
-\cFunAbs{t}{\text{AloTy}}{
-\cDefDesX{p}{\text{AloTy}\times \text{AloTy}}{
-        {t = \text{ProdAloTy}\ p}
+\item $\mName{getProdAloTy} = 
+\cFunAbs{t}{AloTy}{
+\cDefDesX{p}{AloTy\times AloTy}{
+        {t = \mName{ProdAloTy}\ p}
     }}
     \axNoteNL{product type extractability law}
     $
 
-% \item $\text{getProdAloTy} = \cDefDesX{p}{\text{AloTy}\times \text{AloTy}}{\cForsomeB{t}{\text{AloTy}}
-%         {u}{\text{AloTy}}
-%         {s = \text{ProdAloTy} (t, u) \land p = (t, u)}
+% \item $\mName{getProdAloTy} = \cDefDesX{p}{AloTy\times AloTy}{\cForsomeB{t}{AloTy}
+%         {u}{AloTy}
+%         {s = \mName{ProdAloTy} (t, u) \land p = (t, u)}
 %     }
 %     \axNoteNL{product type extractability law}
 %     $
@@ -180,7 +218,7 @@ $}
 % New base types
 {$Expr$.}
 % New constants
-{$\\\text{VarExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\ \text{ConstExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\ \text{EqExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{FunAppExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{FunAbsExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{DefDesExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{OrdPairExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{hasAloTy}_{\cFunTyX{Expr}{AloTy}}
+{$\\\mName{VarExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\ \mName{ConstExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\ \mName{EqExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{FunAppExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{FunAbsExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{DefDesExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{OrdPairExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}
 $}
 % Axiom N/A
 {}
@@ -188,42 +226,49 @@ $}
 {
 \be
 \item $\forall e_1, e_2, e_3, e_4, e_5, e_6, e_7, e_8, e_9,
-e_{10}: \text{Expr}, t_1, t_2: \text{AloTy}, s_1, s_2: S\ .\ \\
-\cDistinctL{\cFunAppBX{\text{VarExpr}}{s_1}{t_1},
-\cFunAppBX{\text{ConstExpr}}{s_2}{t_2},
-\cFunAppBX{\text{EqExpr}}{e_1}{e_2},\\
-\cFunAppBX{\text{FunAppExpr}}{e_3}{e_4},
-\cFunAppBX{\text{FunAbsExpr}}{e_5}{e_6},
-\cFunAppBX{\text{DefDesExpr}}{e_7}{e_8},\\
-\cFunAppBX{\text{OrdPairExpr}}{e_9}{e_{10}}} \axNoteNL{no confusion}$
+e_{10}: Expr, t_1, t_2: AloTy, s_1, s_2: S\ .\ \\
+\cDistinctL{\cFunAppBX{\mName{VarExpr}}{s_1}{t_1},
+\cFunAppBX{\mName{ConstExpr}}{s_2}{t_2},
+\cFunAppBX{\mName{EqExpr}}{e_1}{e_2},\\
+\cFunAppBX{\mName{FunAppExpr}}{e_3}{e_4},
+\cFunAppBX{\mName{FunAbsExpr}}{e_5}{e_6},
+\cFunAppBX{\mName{DefDesExpr}}{e_7}{e_8},\\
+\cFunAppBX{\mName{OrdPairExpr}}{e_9}{e_{10}}} \axNoteNL{no confusion}$
 
-\item $\cInjB{\text{VarExpr}} \axNote{no confusion}$
-\item $\cInjB{\text{ConstExpr}} \axNote{no confusion}$
-\item $\cInjB{\text{EqExpr}} \axNote{no confusion}$
-\item $\cInjB{\text{FunAppExpr}} \axNote{no confusion}$
-\item $\cInjB{\text{FunAbsExpr}} \axNote{no confusion}$
-\item $\cInjB{\text{DefDesExpr}} \axNote{no confusion}$
-\item $\cInjB{\text{OrdPairExpr}} \axNote{no confusion}$
-\item $\cForallX{p}{\cFunTyX{\text{Expr}}{\cB}}{ \cForallB{s}{S}{t}{\text{AloTy}}{\cFunAppX{p}
-{(\cFunAppBX{\text{VarExpr}}{s}{t})}} \land \\ \cForallB{s}{S}{t}{\text{AloTy}}{\cFunAppX{p}
-{(\cFunAppBX{\text{ConstExpr}}{s}{t})}} \land \\
+\item $\cInjB{\mName{VarExpr}} \axNote{no confusion}$
+\item $\cInjB{\mName{ConstExpr}} \axNote{no confusion}$
+\item $\cInjB{\mName{EqExpr}} \axNote{no confusion}$
+\item $\cInjB{\mName{FunAppExpr}} \axNote{no confusion}$
+\item $\cInjB{\mName{FunAbsExpr}} \axNote{no confusion}$
+\item $\cInjB{\mName{DefDesExpr}} \axNote{no confusion}$
+\item $\cInjB{\mName{OrdPairExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{VarExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{ConstExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{EqExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{FunAppExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{FunAbsExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{DefDesExpr}} \axNote{no confusion}$
+\item $\cTotalB{\mName{OrdPairExpr}} \axNote{no confusion}$
+\item $\cForallX{p}{\cFunTyX{Expr}{\cB}}{ \cForallB{s}{S}{t}{AloTy}{\cFunAppX{p}
+{(\cFunAppBX{\mName{VarExpr}}{s}{t})}} \land \\ \cForallB{s}{S}{t}{AloTy}{\cFunAppX{p}
+{(\cFunAppBX{\mName{ConstExpr}}{s}{t})}} \land \\
 %%%%%%%%%%%%%%%%
-\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
-\cFunAppX{p}{\cFunApp{\text{EqExpr}}{e_1 e_2}}} \land \\
+\cForall{e_1,e_2}{Expr}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\mName{EqExpr}}{e_1 e_2}}} \land \\
 %%%%%%%%%%%%%%%%
-\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
-\cFunAppX{p}{\cFunApp{\text{FunAppExpr}}{e_1 e_2}}} \land \\
+\cForall{e_1,e_2}{Expr}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\mName{FunAppExpr}}{e_1 e_2}}} \land \\
 %%%%%%%%%%%%%%%%
-\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
-\cFunAppX{p}{\cFunApp{\text{FunAbsExpr}}{e_1 e_2}}} \land \\
+\cForall{e_1,e_2}{Expr}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\mName{FunAbsExpr}}{e_1 e_2}}} \land \\
 %%%%%%%%%%%%%%%%
-\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
-\cFunAppX{p}{\cFunApp{\text{DefDesExpr}}{e_1 e_2}}} \land \\
+\cForall{e_1,e_2}{Expr}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\mName{DefDesExpr}}{e_1 e_2}}} \land \\
 %%%%%%%%%%%%%%%%
-\cForall{e_1,e_2}{\text{Expr}}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
-\cFunAppX{p}{\cFunApp{\text{OrdPairExpr}}{e_1 e_2}}} 
+\cForall{e_1,e_2}{Expr}{\cFunAppX{p}{e_1} \land \cFunAppX{p}{e_2} \Implies
+\cFunAppX{p}{\cFunApp{\mName{OrdPairExpr}}{e_1 e_2}}} 
 %%%%%%%%%%%%%%%%
-\\\Implies \cForallX{e}{\text{Expr}}{\cFunAppX {p}{e}}}
+\\\Implies \cForallX{e}{Expr}{\cFunAppX {p}{e}}}
 \axNoteNL{induction principle for Expr}$
 \ee
 }
@@ -233,60 +278,62 @@ e_{10}: \text{Expr}, t_1, t_2: \text{AloTy}, s_1, s_2: S\ .\ \\
 % Human-Readable Name
 {Expressions}
 % Name
-{$\mName{EXPR}$.}
+{$Expr$.}
 % Extends
 {$\mName{PREXPR}$.}
 % New base types
 {$Expr$.}
 % New constants
-{$\text{VE}_{\{Expr\}}, \\
-\text{sane}_{\cFunTy{Expr}{Expr}},\\ 
-\text{VarVExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\
-\text{ConstVExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\
-\text{EqVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ 
-\text{FunAppVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{FunAbsVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{DefDesVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \text{OrdPairVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}
+{$
+\\\mName{hasAloTy}_{\cFunTyX{Expr}{AloTy}}, \\
+\mName{VE}_{\{Expr\}}, \\
+\mName{sane}_{\cFunTy{Expr}{Expr}},\\ 
+\mName{VarVExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\
+\mName{ConstVExpr}_{\cFunTyBX{S}{AloTy}{Expr}},\\
+\mName{EqVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ 
+\mName{FunAppVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{FunAbsVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{DefDesVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}},\\ \mName{OrdPairVExpr}_{\cFunTyBX{Expr}{Expr}{Expr}}
 $}
 % Axiom N/A
 {}
 % Axioms
 {
 \be
-\item $\text{hasAloTy} = \cFunAbsX{e}{\text{Expr}}
+\item $\mName{hasAloTy} = \cFunAbsX{e}{Expr}
     {
-    \cDefDesX{t}{\text{AloTy}}{}\\
-        \cForsomeUnique{s}{S}{e = \cFunAppB{\text{VarExpr}}{s}{t}}\\
+    \cDefDesX{t}{AloTy}{}\\
+        \cForsomeUnique{s}{S}{e = \cFunAppB{\mName{VarExpr}}{s}{t}}\\
         %%%%%%%%%%%%%%%%
-        \lor \cForsomeUnique{s}{S}{e = \cFunAppB{\text{ConstExpr}}{s}{t}}\\
+        \lor \cForsomeUnique{s}{S}{e = \cFunAppB{\mName{ConstExpr}}{s}{t}}\\
         %%%%%%%%%%%%%%%%
-        \lor \cForsomeUnique{e_1,e_2}{\text{Expr}}{e = (\cFunAppBX{\text{EqExpr}}{e_1}{e_2}) \land
-        \cFunAppX{\text{hasType}}{e_1} = \cFunAppX{\text{hasType}}{e_2} = t} \\
+        \lor \cForsomeUnique{e_1,e_2}{Expr}{e = (\cFunAppBX{\mName{EqExpr}}{e_1}{e_2}) \land
+        \cFunAppX{\mName{hasAloTy}}{e_1} = \cFunAppX{\mName{hasAloTy}}{e_2} \land \cFunAppX{\mName{isBoolAloTy}}{t}} \\
         %%%%%%%%%%%%%%%%
-        \lor \cForsomeUniqueB{e_1, e_2}{\text{Expr}}{t'}{\text{AloTy}}{e = 
-        (\cFunAppBX{\text{FunAppExpr}}{e_1}{e_2})
-        \land \cFunAppX{\text{hasType}}{e_1} =\\\cFunAppB{\text{FunAloTy}}{t'}{t} \land
-        \cFunAppX{\text{hasType}}{e_2} = t'} \\
+        \lor \cForsomeUniqueB{e_1, e_2}{Expr}{t'}{AloTy}{e = 
+        (\cFunAppBX{\mName{FunAppExpr}}{e_1}{e_2})
+        \land \cFunAppX{\mName{hasAloTy}}{e_1} =\\\cFunAppB{\mName{FunAloTy}}{t'}{t} \land
+        \cFunAppX{\mName{hasAloTy}}{e_2} = t'} \\
         %%%%%%%%%%%%%%%%
-        \lor \cForsomeUniqueC{e'}{\text{Expr}}{t'}{\text{AloTy}}{s}{S}{e = 
-        \cFunAppB{\text{FunAbsExpr}}{\cFunAppB{\text{VarExpr}}{s}{t'}}{e'}
-        \land t = \cFunAppB{\text{FunAloTy}}{t'}{\cFunApp{\text{hasAloTy}}{e'}}} \\
+        \lor \cForsomeUniqueC{e'}{Expr}{t'}{AloTy}{s}{S}{e = 
+        \cFunAppB{\mName{FunAbsExpr}}{\cFunAppB{\mName{VarExpr}}{s}{t'}}{e'}
+        \land t = \cFunAppB{\mName{FunAloTy}}{t'}{\cFunApp{\mName{hasAloTy}}{e'}}} \\
         %%%%%%%%%%%%%%%%
-        \lor \cForsomeUnique{e'}{\text{Expr}}{e = \cFunAppB{\text{DefDesExpr}}{
-        \cFunAppB{\text{VarExpr}}{s}{t}}{e'} \land
-        \neg \text{isBoolAloTy}(t) \land
-        \cFunAppX{\text{isBoolAloTy}}{} {\cFunApp{\text{hasAloTy}}{e'}}}\\
+        \lor \cForsomeUniqueB{e'}{Expr}{s}{S}{e = \cFunAppB{\mName{DefDesExpr}}{
+        \cFunAppB{\mName{VarExpr}}{s}{t}}{e'} \land
+        \neg \mName{isBoolAloTy}(t) \land
+        \cFunAppX{\mName{isBoolAloTy}}{} {\cFunApp{\mName{hasAloTy}}{e'}}}\\
         %%%%%%%%%%%%%%%%
-        \lor \cForsomeUnique{e_1,e_2}{\text{Expr}}{(e = \cFunAppBX{\text{OrdPairExpr}}{e_1}{e_2}) \land t = \cFunAppBX{\text{ProdAloTy}}{\cFunApp{\text{hasType}}{e_1}}{}\\{\cFunApp{\text{hasType}}{e_2}}} \axNoteNL{definition of hasAloTy}\\
+        \lor \cForsomeUnique{e_1,e_2}{Expr}{(e = \cFunAppBX{\mName{OrdPairExpr}}{e_1}{e_2}) \land t = \cFunAppBX{\mName{ProdAloTy}}{\cFunApp{\mName{hasAloTy}}{e_1}}{}\\{\cFunApp{\mName{hasAloTy}}{e_2}}} \axNoteNL{definition of hasAloTy}\\
         %%%%%%%%%%%%%%%%
     }$
-\item $\text{VE}_{\cSetTy{Expr}} = {\sf dom}(\text{hasAloTy}) \axNote{definition of valid expressions}$
-\item $\text{sane} = \cFunAbsQTyX{e}{\text{VE}_{\cSetTy{Expr}}}{e} \axNote{definition of Expr sanitization function}$
-\item $\text{VarVExpr} = \text{VarExpr} \axNote{smart constructor for variables}$
-\item $\text{ConstVExpr} = \text{ConstExpr} \axNote{smart constructor for constants}$
-\item $\text{EqVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{EqExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for equality}$
-\item $\text{FunAppVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{FunAppExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for function application}$
-\item $\text{FunAbsVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{FunAbsExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for function abstraction}$
-\item $\text{DefDesVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{DefDesExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for definite description}$
-\item $\text{OrdPairVExpr} = \cFunAbsQTyX{e_1, e_2}{\text{VE}_{\cSetTy{Expr}}}{\cFunAppX{\text{sane}}{\cFunAppB{\text{OrdPairExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for ordered pair}$
+\item $\mName{VE}_{\cSetTy{Expr}} = {\sf dom}(\mName{hasAloTy}) \axNote{definition of valid expressions}$
+\item $\mName{sane} = \cFunAbsQTyX{e}{\mName{VE}_{\cSetTy{Expr}}}{e} \axNote{definition of Expr sanitization function}$
+\item $\mName{VarVExpr} = \mName{VarExpr} \axNote{smart constructor for variables}$
+\item $\mName{ConstVExpr} = \mName{ConstExpr} \axNote{smart constructor for constants}$
+\item $\mName{EqVExpr} = \cFunAbsQTyX{e_1, e_2}{\mName{VE}_{\cSetTy{Expr}}}{\cFunAppX{\mName{sane}}{\cFunAppB{\mName{EqExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for equality}$
+\item $\mName{FunAppVExpr} = \cFunAbsQTyX{e_1, e_2}{\mName{VE}_{\cSetTy{Expr}}}{\cFunAppX{\mName{sane}}{\cFunAppB{\mName{FunAppExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for function application}$
+\item $\mName{FunAbsVExpr} = \cFunAbsQTyX{e_1, e_2}{\mName{VE}_{\cSetTy{Expr}}}{\cFunAppX{\mName{sane}}{\cFunAppB{\mName{FunAbsExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for function abstraction}$
+\item $\mName{DefDesVExpr} = \cFunAbsQTyX{e_1, e_2}{\mName{VE}_{\cSetTy{Expr}}}{\cFunAppX{\mName{sane}}{\cFunAppB{\mName{DefDesExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for definite description}$
+\item $\mName{OrdPairVExpr} = \cFunAbsQTyX{e_1, e_2}{\mName{VE}_{\cSetTy{Expr}}}{\cFunAppX{\mName{sane}}{\cFunAppB{\mName{OrdPairExpr}}{e_1}{e_2}}} \axNoteNL{smart constructor for ordered pair}$
 \ee
 }
 \end{theory-ext}
@@ -297,29 +344,259 @@ $}
 % Name
 {$\mName{FBVAR}$.}
 % Extends
-{$\mName{EXPR}$.}
+{$\mName{Expr}$.}
 % New base types
 {N/A}
 % New constants
-{$\text{isFree}_{\cFunTyBX{S}{Expr}{\cB}}, \text{isFreeForIn}_{\cFunTyCX{S}{S}{Expr}{\cB}}
+{$\\ \mName{varIsFree}_{\cFunTyBX{Expr}{Expr}{\cB}},\\
+\mName{freeVars}_{\cFunTyX{Expr}{\{Expr\}}},\\
+\mName{varsInExpr}_{\cFunTyX{Expr}{\{Expr\}}},\\
+\mName{varIsBound}_{\cFunTyBX{Expr}{Expr}{\cB}},\\
+\mName{boundVars}_{\cFunTyX{Expr}{\{Expr\}}}
 $}
 % Axiom N/A
 {}
 % Axioms
 {
 \be
-\item $t$
+    % free function
+    \item $\mName{freeVars} = \cFunAbsX{e}{Expr}
+    {
+    \cDefDesX{x}{\mName{\{Expr\}}}{}\\ % Variables
+        \cForsomeUniqueB{s}{S}{t}{AloTy}{(e = \cFunAppBX{\mName{VarVExpr}}{s}{t}) \land x =
+        \{e\}}\\
+        %%%%%%%%%%%%%%%% Constants
+        \lor \cForsomeUniqueB{s}{S}{t}{AloTy}{(e = \cFunAppBX{\mName{ConstVExpr}}{s}{t}) \land x =
+        \emptyset_{\{Expr\}}}\\
+        %%%%%%%%%%%%%%%% Equality
+        \lor \cForsomeUnique{e_1,e_2}{Expr}{e = (\cFunAppBX{\mName{EqVExpr}}{e_1}{e_2}) \land
+        x = \cFunApp{\mName{freeVars}}{e_1} \cup \cFunApp{\mName{freeVars}}{e_2}} \\
+        %%%%%%%%%%%%%%%% Function Application
+        \lor \cForsomeUniqueB{e_1, e_2}{Expr}{t'}{AloTy}{e = 
+        (\cFunAppBX{\mName{FunAppVExpr}}{e_1}{e_2})
+        \land \\
+        \mName{} \hspace{1cm} x = \cFunApp{\mName{freeVars}}{e_1} \cup \cFunApp{\mName{freeVars}}{e_2}}\\
+        %%%%%%%%%%%%%%%% Function Abstraction
+        \lor \cForsomeUnique{v, e_1}{Expr}{e = 
+        \cFunAppB{\mName{FunAbsVExpr}}{v}{e_1}
+        \land x = \mName{freeVars}(e_1) - \{v\}
+        } \\
+        %%%%%%%%%%%%%%%% Definite Description
+        \lor \cForsomeUnique{v, e_1}{Expr}{e = 
+        \cFunAppB{\mName{DefDesVExpr}}{v}{e_1}
+        \land x = \mName{freeVars}(e_1) - \{v\}
+        }\\
+        %%%%%%%%%%%%%%%% Ordered Pair
+        \lor \cForsomeUnique{e_1,e_2}{Expr}{(e = \cFunAppBX{\mName{OrdPairVExpr}}{e_1}{e_2}) \land x = \mName{freeVars}(e_1) \cup \mName{freeVars}(e_2)} \axNoteNL{definition of free}\\
+        %%%%%%%%%%%%%%%%
+    }$
+    
+    % varsInExpr function
+    \item $\mName{varsInExpr} = \cFunAbsX{e}{Expr}
+    {
+    \cDefDesX{x}{\mName{\{Expr\}}}{}\\ % Variables
+        \cForsomeUniqueB{s}{S}{t}{AloTy}{(e = \cFunAppBX{\mName{VarVExpr}}{s}{t}) \land x =
+        \{e\}}\\
+        %%%%%%%%%%%%%%%% Constants
+        \lor \cForsomeUniqueB{s}{S}{t}{AloTy}{(e = \cFunAppBX{\mName{ConstVExpr}}{s}{t}) \land x =
+        \emptyset_{\{Expr\}}}\\
+        %%%%%%%%%%%%%%%% Equality
+        \lor \cForsomeUnique{e_1,e_2}{Expr}{e = (\cFunAppBX{\mName{EqVExpr}}{e_1}{e_2}) \land
+        x = \cFunApp{\mName{varsInExpr}}{e_1} \cup \cFunApp{\mName{varsInExpr}}{e_2}} \\
+        %%%%%%%%%%%%%%%% Function Application
+        \lor \cForsomeUniqueB{e_1, e_2}{Expr}{t'}{AloTy}{e = 
+        (\cFunAppBX{\mName{FunAppVExpr}}{e_1}{e_2})
+        \land \\
+        \mName{} \hspace{1cm} x = \cFunApp{\mName{varsInExpr}}{e_1} \cup \cFunApp{\mName{varsInExpr}}{e_2}}\\
+        %%%%%%%%%%%%%%%% Function Abstraction
+        \lor \cForsomeUnique{v, e_1}{Expr}{e = 
+        \cFunAppB{\mName{FunAbsVExpr}}{v}{e_1}
+        \land x = \mName{varsInExpr}(e_1)
+        } \\
+        %%%%%%%%%%%%%%%% Definite Description
+        \lor \cForsomeUnique{v, e_1}{Expr}{e = 
+        \cFunAppB{\mName{DefDesVExpr}}{v}{e_1}
+        \land x = \mName{varsInExpr}(e_1)
+        }\\
+        %%%%%%%%%%%%%%%% Ordered Pair
+        \lor \cForsomeUnique{e_1,e_2}{Expr}{(e = \cFunAppBX{\mName{OrdPairVExpr}}{e_1}{e_2}) \land x = \mName{varsInExpr}(e_1) \cup \mName{varsInExpr}(e_2)} \axNoteNL{definition of varsInExpr}\\
+        %%%%%%%%%%%%%%%%
+    }$
+    
+    \item $\mName{boundVars} = \cFunAbs{e}{Expr}{(\mName{varsInExpr} \: e) - (\mName{freeVars} \: e)}\axNote{set of free}$
+    
+    \item $\mName{varIsBound} = 
+    \cFunAbs{v}{Expr}{\cFunAbs{e}{Expr}{
+    \cForsomeUniqueB{s}{S}{t}{AloTy}{(v = \mName{VarVExpr} \: s \: t) \mapsto (v \in
+    (\mName{boundVars} \: e)) \: | \: \bot}}} \axNote{bound variable predicate}$
+    
+    \item $\mName{varIsFree} =
+    \cFunAbs{v}{Expr}{\cFunAbs{e}{Expr}{
+    \cForsomeUniqueB{s}{S}{t}{AloTy}{(v = \mName{VarVExpr} \: s \: t) \mapsto (v \in
+    (\mName{freeVars} \: e)) \: | \: \bot}}} \axNote{free variable predicate}$
 \ee
 }
 \end{theory-ext}
 
+\begin{theory-ext}
+% Human-Readable Name
+{Substitution}
+% Name
+{$\mName{SUBS}$.}
+% Extends
+{$\mName{FBVAR}$.}
+% New base types
+{N/A}
+% New constants
+{$\\ \mName{sub}_{\cFunTyCX{Expr}{Expr}{Expr}{Expr}}
+$}
+% Axiom N/A
+{}
+% Axioms
+{
+\be
+    \item $\mName{sub} = \cFunAbsX{A}{Expr}
+    {\cFunAbsX{x}{Expr}
+    {\cFunAbsX{B}{Expr}
+    {\cDefDesX{C}{Expr}
+    {\\ (\cFunAppX{\mName{hasAloTy}}{A} = \cFunAppX{\mName{hasAloTy}}{x}) \land \cForsomeB{s}{S}{t}{AloTy}{x = \cFunAppBX{\mName{VarVExpr}}{s}{t}}
+    %%%%%%%%%%%%%%
+    % Expression B is just variable x
+    \\ \land (
+    \cForsomeUniqueB{s}{S}{t}{AloTy}{B = \cFunAppB{\mName{VarVExpr}}{s}{t} \land B = x \land C = A}
+    %%%%%%%%%%%%%%
+    % Expression B is a variable, but not variable x
+    \\ \lor
+    \cForsomeUniqueB{s}{S}{t}{AloTy}{B = \cFunAppB{\mName{VarVExpr}}{s}{t} \land B \neq x \land C = B}
+    %%%%%%%%%%%%%%
+    % Expression B is a constant
+    \\ \lor
+    \cForsomeUniqueB{s}{S}{t}{AloTy}{B = \cFunAppB{\mName{ConstVExpr}}{s}{t} \land C = B}
+    %%%%%%%%%%%%%%
+    % Expression B is an equality
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{EqVExpr}}{e_1}{e_2} \land
+    \\ \mName{} \hspace{1cm} C = \cFunAppBX{\mName{EqVExpr}}{\cFunAppC{\mName{sub}}{A}{x}{e_1}}{\cFunAppC{\mName{sub}}{A}{x}{e_2}}}
+    %%%%%%%%%%%%%%
+    % Expression B is a function application
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{FunAppVExpr}}{e_1}{e_2} \land
+    \\ \mName{} \hspace{1cm} C = \cFunAppBX{\mName{FunAppVExpr}}{\cFunAppC{\mName{sub}}{A}{x}{e_1}}{\cFunAppC{\mName{sub}}{A}{x}{e_2}}}
+    %%%%%%%%%%%%%%
+    % Expression B is a function abstraction
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{FunAbsVExpr}}{e_1}{e_2} \land e_1 = x \land C = B}
+    %%%%%%%%%%%%%%
+    % Expression B is a function abstraction (variables different)
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{FunAbsVExpr}}{e_1}{e_2} \land e_1 \not= x \land
+    \\ \mName{} \hspace{1cm} C = \cFunAppBX{\mName{FunAbsVExpr}}{e_1}{\cFunAppC{\mName{sub}}{A}{x}{e_2}}}
+    %%%%%%%%%%%%%%
+    % Expression B is a definite description
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{DefDesVExpr}}{e_1}{e_2} \land e_1 = x \land C = B}
+    %%%%%%%%%%%%%%
+    % Expression B is a definite description (variables different)
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{DefDesVExpr}}{e_1}{e_2} \land e_1 \not= x \land
+    \\ \mName{} \hspace{1cm} C = \cFunAppBX{\mName{DefDesVExpr}}{e_1}{\cFunAppC{\mName{sub}}{A}{x}{e_2}}}
+    %%%%%%%%%%%%%%
+    % Expression B is an ordered pair
+    \\ \lor
+    \cForsomeUnique{e_1,e_2}{Expr}{B = \cFunAppB{\mName{OrdPairVExpr}}{e_1}{e_2} \land
+    \\ \mName{} \hspace{1cm} C = \cFunAppBX{\mName{OrdPairVExpr}}{\cFunAppC{\mName{sub}}{A}{x}{e_1}}{\cFunAppC{\mName{sub}}{A}{x}{e_2}}}
+    )
+    }}}} \axNoteNL{definition of the substitution function}$ 
+    
+    
+    % $\mName{sub} = \cFunAbsCX{A}{Expr}
+    % {
+    % \cDefDesX{x}{\mName{\{Expr\}}}{}\\ % Variables
+    %     \cForsomeUniqueB{s}{S}{t}{AloTy}{(e = \cFunAppBX{\mName{VarVExpr}}{s}{t}) \land x =
+    %     \{e\}}\\
+    %     %%%%%%%%%%%%%%%% Constants
+    %     \lor \cForsomeUniqueB{s}{S}{t}{AloTy}{(e = \cFunAppBX{\mName{ConstVExpr}}{s}{t}) \land x =
+    %     \emptyset_{\{Expr\}}}\\
+    %     %%%%%%%%%%%%%%%% Equality
+    %     \lor \cForsomeUnique{e_1,e_2}{Expr}{e = (\cFunAppBX{\mName{EqVExpr}}{e_1}{e_2}) \land
+    %     x = \cFunApp{\mName{varsInExpr}}{e_1} \cup \cFunApp{\mName{varsInExpr}}{e_2}} \\
+    %     %%%%%%%%%%%%%%%% Function Application
+    %     \lor \cForsomeUniqueB{e_1, e_2}{Expr}{t'}{AloTy}{e = 
+    %     (\cFunAppBX{\mName{FunAppVExpr}}{e_1}{e_2})
+    %     \land \\
+    %     \mName{} \hspace{1cm} x = \cFunApp{\mName{varsInExpr}}{e_1} \cup \cFunApp{\mName{varsInExpr}}{e_2}}\\
+    %     %%%%%%%%%%%%%%%% Function Abstraction
+    %     \lor \cForsomeUnique{v, e_1}{Expr}{e = 
+    %     \cFunAppB{\mName{FunAbsVExpr}}{v}{e_1}
+    %     \land x = \mName{varsInExpr}(e_1)
+    %     } \\
+    %     %%%%%%%%%%%%%%%% Definite Description
+    %     \lor \cForsomeUnique{v, e_1}{Expr}{e = 
+    %     \cFunAppB{\mName{DefDesVExpr}}{v}{e_1}
+    %     \land x = \mName{varsInExpr}(e_1)
+    %     }\\
+    %     %%%%%%%%%%%%%%%% Ordered Pair
+    %     \lor \cForsomeUnique{e_1,e_2}{Expr}{(e = \cFunAppBX{\mName{OrdPairVExpr}}{e_1}{e_2}) \land x = \mName{varsInExpr}(e_1) \cup \mName{varsInExpr}(e_2)} \axNoteNL{definition of varsInExpr}\\
+    %     %%%%%%%%%%%%%%%%
+    % }$
+\ee
+}
+\end{theory-ext}
+
+\section{Conclusions}
+Implementing Alonzo's syntax in Alonzo was a wonderful exercise giving the team a much greater understanding of
+not only Alonzo but also how to use it to define inductively-defined sets as types and their properties. 
+
+\subsection{Importance of Establishing Conventions}
+Initially,
+it was found that one of the most difficult parts of starting the project was being able to converse about the
+Alonzo system itself, as the team members easily got confused about whether one was discussing properties (e.g.
+types, expressions) of Alonzo itself or the embedding of Alonzo in Alonzo. Thus, it was decided that we would 
+refer to Alonzo itself as ``outer Alonzo'' and our embedding of Alonzo inside Alonzo as ``inner Alonzo'' or 
+``Alo'' for short.
+
+\subsection{Use of Quasitypes}
+The use of quasitypes to restrict to expressions to well-defined ones was a very interesting use of this concept
+in Alonzo. It allowed us to reuse the logic from the $\mName{hasAloTy}$ function for defining the quasitype very
+easily, which ultimately made the smart constructors very easy to implement, if repetitive. The use of sorts in
+$\mName{AlonzoS}$ should be explored to make this much more type-safe.
+
+\subsection{Recommendations for Alonzo}
+Given the number of inductively-designed sets we needed for the project, there were a lot of extra axioms just
+to ensure ``no confusion'' and ``no junk''. While this was very instructive as to how inductively-designed sets
+like Haskell's algebaric data types work, it was also very repetitive. Thus, the first recommendation would be to
+create an extension of Alonzo allowing one to create these algebraic data types automatically, providing the
+axioms for distinctness, totality, injectivity and the induction principle.
+
+Secondly, the use of pattern-matching in the textbook makes writing inductive definitions easier, but this is
+not natively supported in Alonzo. Exploring the addition of pattern-matching on inductively-defined sets is
+another recommendation of the team. Currently, it can be ``faked'' by using a definite description with a 
+disjunction for all the cases. For base cases, this is usually a simple conjunction both matching the input and 
+then assigning the output. For recursive cases, we use (optionally, unique) existential quantifiers for 
+induction cases to ``extract'' the right variables, then set the variable
+bound by the definition description to the correct value for that case, or simply include the output variable
+as part of the matched input expression.
+
+Thirdly, the team had to create a few new notational definitions, such as $\mName{INJ2}$ and $-$ for set
+subtraction. It's recommended that Alonzo introduces these notational definitions natively, and perhaps others
+for injectivity for functions of more than 2 inputs.
+
+The team also created some helper functions for Alonzo $\LaTeX$ notation, such as $\backslash$\texttt{axNote} and 
+$\backslash$\texttt{axNoteNL} to name axioms:
+
+\begin{Verbatim}
+\newcommand{\axNote}[1]{\hfill (\text{#1})}
+\newcommand{\axNoteNL}[1]{\\ \text{} \axNote{#1}}
+\end{Verbatim}
+
+These could be incorporated into the official $\LaTeX$ for Alonzo documentation.
 
 % \newpage
 % \begin{theory-def}
 % % Human-Readable Name
 % {Expression}
 % % Name
-% {$\mName{EXPR}$.}
+% {$Expr$.}
 % % New base types
 % {$Expr$, $Z$.}
 % % New constants
@@ -330,15 +607,15 @@ $}
 % {}
 % \end{theory-def}
 
-\newpage
-\section {Questions for Bill}
-\begin{itemize}
-\item Can base types be strings or only single characters?
-\item Does the use of functions as constructors make sense? 
-\item How do you represent ``No junk, no confusion'' axiomatically?
-\item How much Alonzo coverage should we aim for? What is the usual scope of projects historically? We were thinking of allowing people to encode types, expressions, languages and theories.
-\item Little theories method or theory extension method?
+% \newpage
+% \section {Questions for Bill}
+% \begin{itemize}
+% \item Can base types be strings or only single characters?
+% \item Does the use of functions as constructors make sense? 
+% \item How do you represent ``No junk, no confusion'' axiomatically?
+% \item How much Alonzo coverage should we aim for? What is the usual scope of projects historically? We were thinking of allowing people to encode types, expressions, languages and theories.
+% \item Little theories method or theory extension method?
 
-\end{itemize}
+% \end{itemize}
 
 \end{document}
