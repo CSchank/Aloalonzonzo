@@ -8,8 +8,8 @@ course requirements.
 Aloalonzonzo is an encoding of the syntactic aspects of William Farmer's logic [Alonzo](https://www.amazon.ca/Simple-Type-Theory-Expressing-Mathematical/dp/3031211111/ref=sr_1_1?crid=CTGSN2O0HG3E&keywords=william+m+farmer+simple+type+theory&qid=1670878026&sprefix=william+farmer+%2Caps%2C167&sr=8-1)
 within its own set of theory definition modules.
 
-- The PDF with the theory definition modules can be found [here]()
-- The PDF of the oral presentation deck can be found [here]()
+- The PDF with the theory definition modules can be found [here](https://github.com/CSchank/Aloalonzonzo/blob/main/Aloalonzonzo_Theory_Modules.pdf)
+- The PDF of the oral presentation deck can be found [here](https://github.com/CSchank/Aloalonzonzo/blob/main/Aloalonzonzo_Presentation.pdf)
 
 ## Theory Definition Modules
 
